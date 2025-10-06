@@ -13,7 +13,6 @@ jobs:
 
       - run:
           name: Build and Push Docker Image
-          working_directory: storefront
           command: |
             if [ "$CIRCLE_BRANCH" = "development" ]; then
               STATIC_TAG="dev"
