@@ -50,7 +50,7 @@ jobs:
               STATIC_TAG="prod"
               CONTAINER_NAME="liqnic-storefront-prod"
             fi
-            SSH_COMMAND="SSH_COMMAND="ssh $SSH_USER@$SSH_HOST""
+            SSH_COMMAND="ssh $SSH_USER@$SSH_HOST"
             $SSH_COMMAND "
               if docker ps -a --format '{{.Names}}' | grep -q "${CONTAINER_NAME}"; then
                 echo 'Container liqnic-storefront exists'
