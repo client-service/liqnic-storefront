@@ -72,7 +72,7 @@ jobs:
               DEPLOY_PATH="/home/docker/liqnic/prod"
             fi
 
-            SSH_COMMAND="SSH_COMMAND="ssh $SSH_USER@$SSH_HOST""
+            SSH_COMMAND="ssh $SSH_USER@$SSH_HOST"
             $SSH_COMMAND "
               set -e
               cd $DEPLOY_PATH
