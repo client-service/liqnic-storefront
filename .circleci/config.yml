@@ -77,7 +77,7 @@ jobs:
               set -e
               cd $DEPLOY_PATH
               docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
-              docker compose up -d strorefront
+              docker compose up -d storefront
               echo '==> storefront deployment complete!'
             "
 
