@@ -23,11 +23,6 @@ jobs:
             fi
 
             UNIQUE_TAG="$STATIC_TAG-$CIRCLE_BUILD_NUM"
-            echo "MEDUSA_BACKEND_URL=${STOREFRONT_MEDUSA_BACKEND_URL}" >> .env
-            echo "NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY=${NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY}" >> .env
-            echo "NEXT_PUBLIC_BASE_URL=${STOREFRONT_NEXT_PUBLIC_BASE_URL}" >> .env
-            echo "NEXT_PUBLIC_DEFAULT_REGION=${STOREFRONT_NEXT_PUBLIC_DEFAULT_REGION}" >> .env
-            echo "REVALIDATE_SECRET=${NEXTJS_REVALIDATE_SECRET}" >> .env
             echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
 
             # Build Docker image with build-time ARG for NEXT_PUBLIC_STRAPI_URL
@@ -86,7 +81,6 @@ workflows:
   build-and-deploy:
     jobs:
       - docker-build-and-publish:
-          context: [ liqnic-dev, liqnic-prod ]
           filters:
             branches:
               only:
