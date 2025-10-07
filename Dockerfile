@@ -8,11 +8,6 @@ WORKDIR /app
 # Add package.json and package-lock.json
 COPY package*.json /tmp/
 
-# CI and release builds should use npm ci to fully respect the lockfile.
-# Local development may use npm install for opportunistic package updates.
-ARG npm_install_command=ci
-# RUN cd /tmp && npm $npm_install_command 
-
 RUN cd /tmp && npm install
 
 # Move installed node modules to app
@@ -46,6 +41,7 @@ COPY --from=build-target /app/.next /app/.next
 COPY --from=build-target /app/package.json /app/package.json
 COPY --from=build-target /app/public /app/public
 COPY --from=build-target /app/next.config.js /app/next.config.js
+COPY --from=build-target /app/check-env-variables.js /app/check-env-variables.js
 
 # PORT ID inside docker container
 EXPOSE 3000
