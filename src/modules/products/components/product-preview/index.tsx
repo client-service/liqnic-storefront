@@ -103,23 +103,24 @@ export default function ProductPreview({ product, isFeatured }: { product: HttpT
         <p className="text-xs text-gray-500 line-clamp-2 min-h-[2rem]">
           {product.subtitle}
         </p>
+      </div>
 
-        {cheapestPrice && (
+      {/* --- PRICE + QUANTITY (same row) --- */}
+      <div className="flex justify-between items-center mt-3">
+        {cheapestPrice ? (
           <span className="text-sm font-semibold">
             {cheapestPrice.calculated_price}
           </span>
+        ) : (
+          <span />
         )}
-      </div>
 
-      {/* Bottom section locked to bottom */}
-      <div className="mt-auto flex flex-col gap-3">
-
-        {/* Quantity */}
         <div className="flex items-center gap-2">
           <Button
             variant="secondary"
             onClick={decrementQuantity}
             disabled={!selectedVariant || quantity <= 1}
+            className="h-8 w-8 p-0"
           >
             -
           </Button>
@@ -130,29 +131,40 @@ export default function ProductPreview({ product, isFeatured }: { product: HttpT
             variant="secondary"
             onClick={incrementQuantity}
             disabled={!selectedVariant || quantity >= maxQuantity}
+            className="h-8 w-8 p-0"
           >
             +
           </Button>
         </div>
+      </div>
 
-        {/* Add to Cart */}
-        <Button
-          onClick={handleAddToCart}
-          disabled={!selectedVariant || !inStock || isAdding}
-          isLoading={isAdding}
-          className="w-full h-10 bg-black text-white"
+      {/* --- ADD TO CART + VIEW DETAILS (same row) --- */}
+      <div className="flex gap-2 mt-4">
+
+        {/* View details (left) */}
+        <LocalizedClientLink
+          href={`/products/${product.handle}`}
+          className="w-1/2"
         >
-          {!inStock ? "Out of stock" : "Add to cart"}
-        </Button>
-
-        {/* View details */}
-        <LocalizedClientLink href={`/products/${product.handle}`} className="w-full">
           <Button variant="secondary" className="w-full h-10">
             View details
           </Button>
         </LocalizedClientLink>
 
+        {/* Add to cart (right) */}
+        <Button
+          onClick={handleAddToCart}
+          disabled={!selectedVariant || !inStock || isAdding}
+          isLoading={isAdding}
+          className="w-1/2 h-10 bg-black text-white"
+        >
+          {!inStock ? "Out of stock" : "Add to cart"}
+        </Button>
+
+        
+
       </div>
     </div>
   )
+
 }
