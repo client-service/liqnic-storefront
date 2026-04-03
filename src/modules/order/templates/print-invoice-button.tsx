@@ -251,9 +251,9 @@ export default function PrintInvoiceButton({ order }: Props) {
 
               {/* Footer */}
               <div className="mt-10 pt-6 border-t border-gray-200 text-center text-xs text-gray-400">
-                <p>Thank you for shopping with Liqnic Store!</p>
+                <p>Thank you for shopping with Liqnic!</p>
                 <p className="mt-1">
-                  For any queries, contact us at support@liqnic.com
+                  For any queries, contact us at liqnichost@gmail.com
                 </p>
               </div>
             </div>

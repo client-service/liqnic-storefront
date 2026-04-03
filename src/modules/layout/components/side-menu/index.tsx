@@ -128,7 +128,7 @@ export default function SideMenu({
                         />
                       </div>
                       <Text className="flex justify-between txt-compact-small">
-                        © {new Date().getFullYear()} Liqnic Store. All rights
+                        © {new Date().getFullYear()} Liqnic. All rights
                         reserved.
                       </Text>
                     </div>
