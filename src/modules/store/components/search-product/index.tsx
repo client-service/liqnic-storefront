@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter, usePathname, useSearchParams } from "next/navigation"
 import { FiSearch } from "react-icons/fi"
 
@@ -13,6 +13,20 @@ const SearchBar = ({ initialQuery = "" }: SearchBarProps) => {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
+
+  useEffect(() => {
+    const delay = setTimeout(() => {
+      const params = new URLSearchParams(searchParams.toString())
+      if (searchTerm) {
+        params.set("query", searchTerm)
+      } else {
+        params.delete("query")
+      }
+      router.push(`${pathname}?${params.toString()}`)
+    }, 500)
+
+    return () => clearTimeout(delay)
+  }, [searchTerm])
 
   const handleSearch = () => {
     const params = new URLSearchParams(searchParams.toString())
@@ -48,7 +62,7 @@ const SearchBar = ({ initialQuery = "" }: SearchBarProps) => {
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder="Searh with product name"
+          placeholder="Search with product name"
           className="w-full pl-10 pr-28 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-[0.5px] focus:ring-primary focus:border-primary transition shadow-sm"
         />
         <button

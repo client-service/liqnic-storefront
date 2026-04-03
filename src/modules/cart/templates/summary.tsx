@@ -1,12 +1,11 @@
 "use client"
 
-import { Button, Heading } from "@medusajs/ui"
+import { Heading } from "@medusajs/ui"
 
-import CartTotals from "@modules/common/components/cart-totals"
-import Divider from "@modules/common/components/divider"
-import DiscountCode from "@modules/checkout/components/discount-code"
-import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import { HttpTypes } from "@medusajs/types"
+import DiscountCode from "@modules/checkout/components/discount-code"
+import CartTotals from "@modules/common/components/cart-totals"
+import LocalizedClientLink from "@modules/common/components/localized-client-link"
 
 type SummaryProps = {
   cart: HttpTypes.StoreCart & {

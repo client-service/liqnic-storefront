@@ -29,8 +29,8 @@ export async function buildMenuItems(): Promise<MenuItem[]> {
     { label: "Home", href: "/" },
     { label: "Shop", href: "/shop" },
     ...menuItems,
-    { label: "Bundles & Gifts", href: "/bundles" },
-    { label: "About", href: "/about" },
+    // { label: "Bundles & Gifts", href: "/bundles" },
+    { label: "About us", href: "/about" },
     { label: "Contact", href: "/contact" },
   ]
 }

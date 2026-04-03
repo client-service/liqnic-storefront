@@ -74,9 +74,9 @@ const Item = ({ item, type = "full", currencyCode }: ItemProps) => {
 
         {/* Quantity Controls */}
         <div className="flex items-center gap-4 mt-4 lg:mt-8">
-          <span className="text-gray-600 text-xs sm:text-sm font-medium">
+          {/* <span className="text-gray-600 text-xs sm:text-sm font-medium">
             Quantity
-          </span>
+          </span> */}
 
           {type === "full" && (
             <Table.Cell>

@@ -7,62 +7,104 @@ export default function PrivacyPolicy() {
       </h1>
 
       <div className="space-y-6 leading-relaxed">
+        <p>
+          This Privacy Policy describes how your personal information is
+          collected, used, and shared when you visit or make a purchase from{" "}
+          <strong>Liqnic</strong>.
+        </p>
+
         <section>
-          <h2 className="text-2xl font-semibold mb-2">1. Information We Collect</h2>
+          <h2 className="text-2xl font-semibold mb-2">
+            1. Personal Information We Collect
+          </h2>
           <p>
-            We may collect personal details such as your name, email, phone, billing/shipping address, payment details, and age verification documents. We also collect non-personal data like browser type, IP address, and site usage information.
+            When you make a purchase or attempt to make a purchase through the
+            site, we collect certain information from you, including:
+          </p>
+          <ul className="list-disc ml-6 mt-2 space-y-1">
+            <li>
+              <strong>Identity Data:</strong> Name, date of birth, and copies of
+              Government issued IDs (for age verification only).
+            </li>
+            <li>
+              <strong>Contact Data:</strong> Billing address, delivery address,
+              email address, and phone number.
+            </li>
+            <li>
+              <strong>Technical Data:</strong> IP address, browser type, and
+              cookies to improve your shopping experience.
+            </li>
+          </ul>
+        </section>
+
+        <section>
+          <h2 className="text-2xl font-semibold mb-2">
+            2. How We Use Your Information
+          </h2>
+          <p>We use the Order Information generally to:</p>
+          <ul className="list-disc ml-6 mt-2 space-y-1">
+            <li>
+              Fulfill any orders placed through the Site (including processing
+              payment and arranging for shipping).
+            </li>
+            <li>
+              Verify your age to comply with Nepalese laws regarding the sale of
+              restricted goods.
+            </li>
+            <li>
+              Communicate with you regarding order status or promotional offers
+              (if opted-in).
+            </li>
+          </ul>
+        </section>
+
+        <section>
+          <h2 className="text-2xl font-semibold mb-2">
+            3. Data Sharing &amp; Security
+          </h2>
+          <ul className="list-disc ml-6 mt-2 space-y-1">
+            <li>
+              <strong>Third Parties:</strong> We share your Personal Information
+              with third parties only to help us use your Personal Information
+              as described above (e.g., our delivery partners and payment
+              gateways like eSewa/Khalti).
+            </li>
+            <li>
+              <strong>Legal Compliance:</strong> We may share your information
+              to comply with applicable laws and regulations in Nepal, or to
+              respond to a subpoena or lawful request for information we
+              receive.
+            </li>
+            <li>
+              <strong>Security:</strong> We implement industry-standard
+              encryption to protect your data. However, no method of
+              transmission over the internet is 100% secure.
+            </li>
+          </ul>
+        </section>
+
+        <section>
+          <h2 className="text-2xl font-semibold mb-2">4. Data Retention</h2>
+          <p>
+            When you place an order through the site, we will maintain your
+            Order Information for our records unless and until you ask us to
+            delete this information, subject to our legal obligations to keep
+            records of restricted sales.
           </p>
         </section>
 
         <section>
-          <h2 className="text-2xl font-semibold mb-2">2. How We Use Your Data</h2>
+          <h2 className="text-2xl font-semibold mb-2">
+            5. Consent &amp; Electronic Acceptance
+          </h2>
           <p>
-            Your data is used to process orders, verify legal age, improve user experience, communicate with you, and send promotional offers if you opt in.
-          </p>
-        </section>
-
-        <section>
-          <h2 className="text-2xl font-semibold mb-2">3. Sharing of Information</h2>
-          <p>
-            We do not sell your data. Information may be shared with trusted third parties such as delivery services, payment processors, and as required by law.
-          </p>
-        </section>
-
-        <section>
-          <h2 className="text-2xl font-semibold mb-2">4. Cookies & Tracking</h2>
-          <p>
-            We use cookies to improve site functionality, analyze usage, and personalize your experience. You can manage cookies through your browser settings.
-          </p>
-        </section>
-
-        <section>
-          <h2 className="text-2xl font-semibold mb-2">5. Data Security</h2>
-          <p>
-            We implement reasonable safeguards like encryption and secure servers. However, no system can guarantee complete security of your data.
-          </p>
-        </section>
-
-        <section>
-          <h2 className="text-2xl font-semibold mb-2">6. Your Rights</h2>
-          <p>
-            Depending on your jurisdiction, you may have the right to access, update, or delete your data, as well as opt out of marketing communications at any time.
-          </p>
-        </section>
-
-        <section>
-          <h2 className="text-2xl font-semibold mb-2">7. Minors</h2>
-          <p>
-            Our services are not intended for individuals below the legal age for alcohol/tobacco purchases. If we discover data from underage users, we will promptly delete it.
-          </p>
-        </section>
-
-        <section>
-          <h2 className="text-2xl font-semibold mb-2">8. Changes to This Policy</h2>
-          <p>
-            We may update this Privacy Policy periodically. Any changes will be posted on this page with a revised effective date.
+            By clicking <strong>"Checkout,"</strong> <strong>"I Agree,"</strong>{" "}
+            or by completing a purchase, you acknowledge that you have read,
+            understood, and agreed to be bound by these Terms and Conditions and
+            the Privacy Policy in their entirety.
           </p>
         </section>
       </div>
     </div>
-  );
+  )
 }

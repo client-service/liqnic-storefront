@@ -9,7 +9,7 @@ import SideMenu from "@modules/layout/components/side-menu"
 import Image from "next/image"
 import Link from "next/link"
 import { Suspense } from "react"
-import { LuSearch } from "react-icons/lu"
+import { LuUser } from "react-icons/lu"
 
 export default async function Navbar() {
   const regions: StoreRegion[] = await listRegions()
@@ -27,8 +27,8 @@ export default async function Navbar() {
         <div className="hidden lg:flex items-center gap-[25px]">
           {MENU_ITEMS.map((item) =>
             item.dropdown ? (
-              <div key={item.label} className="relative group">
-                <div className="flex items-center gap-[5px] cursor-pointer">
+              <div key={item.label} className="relative group ">
+                <div className="flex items-center gap-[5px] cursor-pointer!">
                   <span className="text-black text-[14.4px] font-medium leading-[150%] group-hover:text-[#C5A163] transition-colors font-manrope">
                     {item.label}
                   </span>
@@ -36,7 +36,7 @@ export default async function Navbar() {
                 </div>
 
                 {/* Dropdown menu */}
-                <div className="absolute top-full left-0 mt-2 w-40 bg-white border border-gray-200 shadow-lg opacity-0 invisible group-hover:visible group-hover:opacity-100 transition-all">
+                <div className=" cursor-pointer! absolute top-full left-0 mt-2 w-40 lg:w-60 bg-white border rounded-lg  border-gray-200 shadow-lg opacity-0 invisible group-hover:visible group-hover:opacity-100 transition-all">
                   {item.children?.map((child) => (
                     <Link
                       key={child.label}
@@ -60,25 +60,20 @@ export default async function Navbar() {
           )}
         </div>
 
-        <div className="flex space-x-2 items-center">
+        <div className="flex space-x-2 lg:space-x-8 items-center">
           <div className="hidden small:flex items-center gap-x-6 h-full">
             <LocalizedClientLink
-              className="hover:text-ui-fg-base"
+              className="hover:text-ui-fg-base flex items-center gap-1.5"
               href="/account"
               data-testid="nav-account-link"
             >
-              Account
+              <LuUser className="w-5 h-5" />
+              <span className="text-[14.4px] font-medium font-manrope">
+                My Account
+              </span>
             </LocalizedClientLink>
           </div>
-          <LocalizedClientLink
-            className="hover:text-ui-fg-base"
-            href="/shop"
-            data-testid="nav-account-link"
-          >
-            <div className="bg-gray-100 rounded-md p-2">
-              <LuSearch />
-            </div>
-          </LocalizedClientLink>
+
           {/* Cart */}
           <Suspense
             fallback={

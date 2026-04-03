@@ -8,34 +8,34 @@ const Hero = () => {
 
   const heroData = [
     {
-      image: "/images/hero-one.png",
+      image: "/images/slide-1.jpg",
       title: "IQOS ILUMA. Smoke-Free Innovation, Redefined.",
       description:
         "From IQOS ILUMA PRIME to ILUMA ONE, experience a new era of heated tobacco — crafted for sophistication, designed for modern living.",
-      primaryButton: "Shop IQOS Devices",
-      primaryLink: "/categories/device",
-      secondaryButton: "Shop Accessories",
-      secondaryLink: "/categories/device",
-    },
-    {
-      image: "/images/hero-two.png",
-      title: "Premium IQOS ILUMA Devices. Smoke-Free Innovation.",
-      description:
-        "Experience the future of nicotine with IQOS ILUMA, PRIME, and ONE — designed for sophistication, cleaner taste, and convenience",
       primaryButton: "Shop IQOS Devices",
       primaryLink: "/categories/iqos-devices",
       secondaryButton: "Shop Accessories",
       secondaryLink: "/categories/accessories",
     },
+    // {
+    //   image: "/images/slide-2.jpg",
+    //   title: "Premium IQOS ILUMA Devices. Smoke-Free Innovation.",
+    //   description:
+    //     "Experience the future of nicotine with IQOS ILUMA, PRIME, and ONE — designed for sophistication, cleaner taste, and convenience",
+    //   primaryButton: "Shop IQOS Devices",
+    //   primaryLink: "/categories/iqos-devices",
+    //   secondaryButton: "Shop Accessories",
+    //   secondaryLink: "/categories/accessories",
+    // },
     {
-      image: "/images/hero-third.png",
+      image: "/images/zyn-slide.jpg",
       title: "ZYN Nicotine Pouches. Fresh, Discreet, Powerful.",
       description:
         "Explore ZYN in multiple flavors and strengths — a modern, smoke-free nicotine experience that fits your lifestyle.",
       primaryButton: "Shop ZYN Citrus",
-      primaryLink: "/categories/zyn-citrus",
+      primaryLink: "/categories/nicotine-pouch",
       secondaryButton: "Shop ZYN Cool Mint",
-      secondaryLink: "/categories/zyn-coolmint",
+      secondaryLink: "/categories/nicotine-pouch",
     },
     {
       image: "/images/hero-four.png",
@@ -43,7 +43,7 @@ const Hero = () => {
       description:
         "From Moët Hennessy to Don Angel, discover rare whiskies, timeless cognacs, fine champagnes, and limited-edition collections — curated for every occasion.",
       primaryButton: "Shop Cognac",
-      primaryLink: "/categories/cognac",
+      primaryLink: "/categories/liquor",
       secondaryButton: "Shop Whiskies",
       secondaryLink: "/categories/liquor",
     },
@@ -80,7 +80,7 @@ const Hero = () => {
             </div>
           </div>
         ))}
-        {heroData.map((hero, index) => (
+        {/* {heroData.map((hero, index) => (
           <div
             key={index}
             className={`md:hidden absolute inset-0 transition-opacity duration-1000 ease-in-out w-full h-full  flex items-end ${
@@ -100,7 +100,7 @@ const Hero = () => {
               />
             </div>
           </div>
-        ))}
+        ))} */}
 
         <div className="relative component-px h-full py-8 grid lg:grid-cols-4 w-full">
           <div className="col-span-3 flex mt-4 md:mt-8 lg:mt-16 w-full h-full">

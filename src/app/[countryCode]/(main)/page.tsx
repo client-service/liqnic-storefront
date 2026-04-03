@@ -6,6 +6,7 @@ import AgeVerificationWrapper from "components/AgeVerificationWrapper"
 import Features from "components/features"
 import IqosDeviceSection from "components/how-to-use"
 import IcosDeviceShowcase from "components/icos-device-showcase"
+import IllumaAd from "components/illuma-ad"
 import IllumaProducts from "components/illuma-products"
 import LiquorShowcase from "components/liquor-showcase"
 import CustomerTestimonials from "components/testimonials"
@@ -23,31 +24,39 @@ export default async function Home({
     fields: "id, handle, title",
   })
 
-  console.log("countryCode:", countryCode)
-
-  if (!collections || !region) {
-    return <p>No collections or region found</p> // safer than null
-  }
-
   return (
     <>
       <AgeVerificationWrapper>
         <Hero />
+        <IllumaAd
+          src="https://res.cloudinary.com/do9wvb32d/video/upload/v1775184129/iqos_iluma_ad_1_c8hd3h.mp4"
+          poster="/images/video-thumbnail.jpg" // optional
+        />
+
         <Features />
-        <IllumaProducts />
-        <div className="component-px py-8 lg:pt-16">
-          <h2 className="text-base md:text-xl lg:text-3xl  text-center font-semibold">
-            Our Products
-          </h2>
-          <ul className="flex flex-col gap-x-6">
-            <FeaturedProducts region={region} />
-          </ul>
-        </div>
+        {/* <IllumaProducts />  */}
+        {collections && region ? (
+          <div className="component-px py-8 ">
+            <div className="flex flex-col items-center gap-2 text-center">
+              <h2 className="text-base md:text-xl lg:text-3xl font-bold text-gray-900">
+                The Collection
+              </h2>
+              <p className="text-sm md:text-base text-gray-400">
+                Where fine spirits meet premium smoke.
+              </p>
+            </div>
+            <ul className="flex flex-col gap-x-6">
+              <FeaturedProducts region={region} />
+            </ul>
+          </div>
+        ) : (
+          <p>No collections or region found</p>
+        )}
         <IcosDeviceShowcase />
         <ZYNProductsShowcase />
         <LiquorShowcase />
         <IqosDeviceSection />
-        <CustomerTestimonials />
+        {/* <CustomerTestimonials />  */}
       </AgeVerificationWrapper>
     </>
   )
