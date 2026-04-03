@@ -38,10 +38,10 @@ export default async function Home({
         {collections && region ? (
           <div className="component-px py-8 ">
             <div className="flex flex-col items-center gap-2 text-center">
-              <h2 className="text-lg md:text-xl lg:text-3xl font-bold text-gray-900">
+              <h2 className="text-xl lg:text-3xl font-bold text-gray-900">
                 The Collection
               </h2>
-              <p className="text-sm md:text-base text-gray-400">
+              <p className="text-sm md:text-base text-gray-700">
                 Where fine spirits meet premium smoke.
               </p>
             </div>
