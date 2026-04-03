@@ -1,5 +1,6 @@
 import Link from "next/link"
 import { LuMail, LuMapPin, LuPhone } from "react-icons/lu"
+
 export default function Footer() {
   return (
     <footer className="w-full bg-[#F9F6EF] px-4 py-8 sm:py-12 lg:py-[50px]">
@@ -7,16 +8,19 @@ export default function Footer() {
         {/* Main Footer Content */}
         <div className="flex flex-col lg:flex-row justify-between items-start gap-8 lg:gap-12 mb-8 lg:mb-[35px]">
           {/* Logo and Social Section */}
-          <div className="w-full lg:w-[282px] flex flex-col items-start gap-6 lg:gap-[34px]">
+          <div className="w-full lg:w-[400px] flex flex-col items-start gap-6 lg:gap-[34px]">
             <div className="flex flex-col items-start gap-4 lg:gap-[17px]">
               <img src="/logo.png" className="h-[55px] w-auto" />
               <p className="text-[#606060] text-[13px] font-medium leading-[20px] font-manrope">
-                Short description of the company
+                Nepal's premier digital boutique for the refined connoisseur.
+                Our name represents the dual nature of modern relaxation, the
+                timeless tradition of fine liquor and the cutting-edge
+                innovation of nicotine technology.
               </p>
             </div>
 
-            {/* Social Media Icons */}
-            <div className="flex items-center gap-[14px]">
+            {/* Social Media Icons — commented out until pages are ready */}
+            {/* <div className="flex items-center gap-[14px]">
               <a href="#" className="group">
                 <div className="w-[22px] h-[22px]">
                   <svg
@@ -104,7 +108,7 @@ export default function Footer() {
                   </svg>
                 </div>
               </a>
-            </div>
+            </div> */}
           </div>
 
           {/* Navigation Links Grid */}
@@ -115,30 +119,31 @@ export default function Footer() {
                 Explore
               </h3>
               <div className="flex flex-col items-start gap-[6px]">
-                <a
+                <Link
                   href="/shop"
                   className="text-[#606060] text-[13px] font-medium leading-[20px] hover:text-[#C5A163] transition-colors font-manrope"
                 >
                   Shop
-                </a>
-                <a
+                </Link>
+                <Link
                   href="/about"
                   className="text-[#606060] text-[13px] font-medium leading-[20px] hover:text-[#C5A163] transition-colors font-manrope"
                 >
                   About
-                </a>
-                <a
+                </Link>
+                <Link
                   href="/contact"
                   className="text-[#606060] text-[13px] font-medium leading-[20px] hover:text-[#C5A163] transition-colors font-manrope"
                 >
                   Contact
-                </a>
-                <a
-                  href="#"
+                </Link>
+                {/* FAQs page not yet available */}
+                {/* <Link
+                  href="/faqs"
                   className="text-[#606060] text-[13px] font-medium leading-[20px] hover:text-[#C5A163] transition-colors font-manrope"
                 >
-                  FAQs/help
-                </a>
+                  FAQs / Help
+                </Link> */}
               </div>
             </div>
 
@@ -160,18 +165,20 @@ export default function Footer() {
                 >
                   Privacy Policy
                 </Link>
-                <Link
-                  href="#"
+                {/* Disclaimer page not yet available */}
+                {/* <Link
+                  href="/disclaimer"
                   className="text-[#606060] text-[13px] font-medium leading-[20px] hover:text-[#C5A163] transition-colors font-manrope"
                 >
                   Disclaimer
-                </Link>
-                <Link
+                </Link> */}
+                {/* Shipping & Returns page not yet available */}
+                {/* <Link
                   href="/shipping-return-policy"
                   className="text-[#606060] text-[13px] font-medium leading-[20px] hover:text-[#C5A163] transition-colors font-manrope"
                 >
                   Shipping and Returns
-                </Link>
+                </Link> */}
               </div>
             </div>
 
@@ -181,16 +188,16 @@ export default function Footer() {
                 Contact
               </h3>
               <div className="flex flex-col items-start gap-[6px]">
-                <div className="flex items-center gap-[10px]">
+                {/* <div className="flex items-center gap-[10px]">
                   <LuPhone className="w-4 h-4 text-black" />
                   <span className="text-[#606060] text-[13px] font-medium leading-[20px] font-manrope">
                     +977 9823123457
                   </span>
-                </div>
+                </div> */}
                 <div className="flex items-center gap-[10px]">
                   <LuMail className="w-4 h-4 text-black" />
                   <span className="text-[#606060] text-[13px] font-medium leading-[20px] font-manrope">
-                    support@liqnic.com
+                    liqnichost@gmail.com
                   </span>
                 </div>
                 <div className="flex items-center gap-[10px]">
@@ -208,7 +215,7 @@ export default function Footer() {
         <div className="border-t border-[#E2E8F0] pt-4">
           <div className="text-center">
             <p className="text-[#606060] text-[14px] font-medium leading-[24px] font-manrope">
-              © 2025 Liqnic. All rights reserved.
+              © {new Date().getFullYear()} Liqnic. All rights reserved.
               <br className="sm:hidden" />
               <span className="hidden sm:inline"> </span>
               You must be 18+ to access this website. Please consume

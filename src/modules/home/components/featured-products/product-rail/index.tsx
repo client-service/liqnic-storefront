@@ -48,18 +48,18 @@
 
 import { listProducts } from "@lib/data/products"
 import { HttpTypes } from "@medusajs/types"
-import { Text } from "@medusajs/ui"
 
-import InteractiveLink from "@modules/common/components/interactive-link"
 import ProductPreview from "@modules/products/components/product-preview"
 import Link from "next/link"
 
 export default async function ProductRail({
   region,
   limit = 8, // default limit
+  columns = 4, // ← add this
 }: {
   region: HttpTypes.StoreRegion
   limit?: number
+  columns?: 3 | 4 // ← add this
 }) {
   const {
     response: { products: pricedProducts },
@@ -100,7 +100,11 @@ export default async function ProductRail({
           </svg>
         </Link>
       </div>
-      <ul className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-24 small:gap-y-36">
+      <ul
+        className={`grid sm:grid-cols-2 md:grid-cols-3 ${
+          columns === 4 ? "lg:grid-cols-4" : "lg:grid-cols-3"
+        } gap-6`}
+      >
         {pricedProducts.map((product) => (
           <li key={product.id}>
             <ProductPreview product={product} isFeatured />

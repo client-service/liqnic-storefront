@@ -1,16 +1,22 @@
 "use client"
 
-import { useState, useMemo, useEffect } from "react"
-import Image from "next/image"
-import LocalizedClientLink from "@modules/common/components/localized-client-link"
-import { Button } from "@medusajs/ui"
 import { addToCart } from "@lib/data/cart"
-import { HttpTypes } from "@medusajs/types"
-import { isEqual } from "lodash"
-import { useParams } from "next/navigation"
 import { getProductPrice } from "@lib/util/get-product-price"
+import { HttpTypes } from "@medusajs/types"
+import { Button } from "@medusajs/ui"
+import LocalizedClientLink from "@modules/common/components/localized-client-link"
+import { isEqual } from "lodash"
+import Image from "next/image"
+import { useParams } from "next/navigation"
+import { useEffect, useMemo, useState } from "react"
 
-export default function ProductPreview({ product, isFeatured }: { product: HttpTypes.StoreProduct, isFeatured?: boolean }) {
+export default function ProductPreview({
+  product,
+  isFeatured,
+}: {
+  product: HttpTypes.StoreProduct
+  isFeatured?: boolean
+}) {
   const [options, setOptions] = useState<Record<string, string | undefined>>({})
   const [quantity, setQuantity] = useState(1)
   const [isAdding, setIsAdding] = useState(false)
@@ -58,8 +64,7 @@ export default function ProductPreview({ product, isFeatured }: { product: HttpT
   const incrementQuantity = () =>
     setQuantity((q) => Math.min(q + 1, maxQuantity))
 
-  const decrementQuantity = () =>
-    setQuantity((q) => Math.max(q - 1, 1))
+  const decrementQuantity = () => setQuantity((q) => Math.max(q - 1, 1))
 
   const handleAddToCart = async () => {
     if (!selectedVariant?.id) return
@@ -76,21 +81,26 @@ export default function ProductPreview({ product, isFeatured }: { product: HttpT
   const imageUrl = product.thumbnail || product.images?.[0]?.url
   const { cheapestPrice } = getProductPrice({ product })
 
-  return (
-    <div className="group w-full h-full flex flex-col border rounded-lg bg-[#F9F9F9] p-4 sm:p-6">
+  console.log("cheapestPrice →", cheapestPrice)
+  console.log(
+    "variant calculated_price →",
+    product.variants?.[0]?.calculated_price
+  )
 
+  return (
+    <div className="group w-full h-full flex flex-col border rounded-lg bg-[#F9F9F9] p-4 ">
       {/* Image */}
-      <div className="relative w-full aspect-square overflow-hidden rounded-lg border flex items-center justify-center">
+      <div className="relative w-full overflow-hidden rounded-lg flex items-center justify-center h-60 bg-gray-50">
         {imageUrl ? (
           <Image
             src={imageUrl}
             alt={product.title}
-            width={200}
-            height={200}
-            className="object-contain"
+            width={500}
+            height={500}
+            className="object-cover w-full h-full rounded-lg border scale-110 bg-white"
           />
         ) : (
-          <div className="text-gray-500">No image</div>
+          <div className="text-gray-400 text-sm">No image</div>
         )}
       </div>
 
@@ -109,7 +119,7 @@ export default function ProductPreview({ product, isFeatured }: { product: HttpT
       <div className="flex justify-between items-center mt-3">
         {cheapestPrice ? (
           <span className="text-sm font-semibold">
-            {cheapestPrice.calculated_price}
+            {cheapestPrice.original_price}
           </span>
         ) : (
           <span />
@@ -140,7 +150,6 @@ export default function ProductPreview({ product, isFeatured }: { product: HttpT
 
       {/* --- ADD TO CART + VIEW DETAILS (same row) --- */}
       <div className="flex gap-2 mt-4">
-
         {/* View details (left) */}
         <LocalizedClientLink
           href={`/products/${product.handle}`}
@@ -160,11 +169,7 @@ export default function ProductPreview({ product, isFeatured }: { product: HttpT
         >
           {!inStock ? "Out of stock" : "Add to cart"}
         </Button>
-
-        
-
       </div>
     </div>
   )
-
 }

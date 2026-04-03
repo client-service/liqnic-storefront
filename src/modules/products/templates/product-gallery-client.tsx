@@ -1,5 +1,6 @@
 "use client"
 
+import Image from "next/image"
 import { useState } from "react"
 
 type Props = {
@@ -25,18 +26,18 @@ export default function ProductGalleryClient({ images, title }: Props) {
           <button
             key={index}
             onClick={() => setActiveIndex(index)}
-            className={`shrink-0 rounded-lg border-2 transition-colors duration-200 overflow-hidden bg-white ${
+            className={`w-20 h-20  rounded-lg  shrink-0  border-2 transition-colors duration-200 overflow-hidden  ${
               activeIndex === index
                 ? "border-primary"
                 : "border-gray-200 hover:border-primary"
             }`}
             aria-label={`View product image ${index + 1}`}
           >
-            <div className="w-20 h-20 p-1 flex items-center justify-center ">
+            <div className="flex items-center justify-center ">
               <img
                 src={img.url}
                 alt={title || `Product thumbnail ${index + 1}`}
-                className="w-full h-full object-contain"
+                className="w-full h-full object-cover bg-white"
               />
             </div>
           </button>
@@ -44,11 +45,13 @@ export default function ProductGalleryClient({ images, title }: Props) {
       </aside>
 
       {/* Main Image */}
-      <div className="order-1 md:order-2 md:col-span-7 relative w-full h-[70vh] border-2 rounded-lg overflow-hidden bg-white flex items-center justify-center">
-        <img
+      <div className="order-1 md:order-2 md:col-span-7 relative w-full rounded-lg overflow-hidden bg-white">
+        <Image
           src={formatted[activeIndex].url}
           alt={title || "Product image"}
-          className="w-full h-full object-contain"
+          className="w-full h-auto block"
+          width={2000}
+          height={2000}
         />
       </div>
     </div>

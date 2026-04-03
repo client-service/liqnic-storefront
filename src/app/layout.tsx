@@ -17,7 +17,7 @@ export default function RootLayout(props: { children: React.ReactNode }) {
   return (
     <html lang="en" data-mode="light" className={manrope.variable}>
       <body className="">
-        <main className="relative">{props.children}</main>
+        <div className="relative">{props.children}</div>
       </body>
     </html>
   )
