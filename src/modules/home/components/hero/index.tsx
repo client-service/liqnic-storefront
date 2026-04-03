@@ -59,11 +59,11 @@ const Hero = () => {
 
   return (
     <section className="relative">
-      <div className="relative h-[75vh] lg:h-[85vh] w-full overflow-hidden">
+      <div className="relative h-[70vh] lg:h-[85vh] w-full overflow-hidden">
         {heroData.map((hero, index) => (
           <div
             key={index}
-            className={`hidden  md:block absolute inset-0 transition-opacity duration-1000 ease-in-out ${
+            className={`hidden md:flex absolute inset-0 transition-opacity duration-1000 ease-in-out ${
               index === currentHero ? "opacity-100" : "opacity-0"
             }`}
           >
@@ -80,7 +80,7 @@ const Hero = () => {
             </div>
           </div>
         ))}
-        {/* {heroData.map((hero, index) => (
+        {heroData.map((hero, index) => (
           <div
             key={index}
             className={`md:hidden absolute inset-0 transition-opacity duration-1000 ease-in-out w-full h-full  flex items-end ${
@@ -100,7 +100,7 @@ const Hero = () => {
               />
             </div>
           </div>
-        ))} */}
+        ))}
 
         <div className="relative component-px h-full py-8 grid lg:grid-cols-4 w-full">
           <div className="col-span-3 flex mt-4 md:mt-8 lg:mt-16 w-full h-full">
