@@ -56,22 +56,28 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
       }
     }
 
-    const title = productCategory.name + " | Liqnic"
-    const description = productCategory.description ?? `${title} category.`
+    // Just the name — layout.tsx template: "%s | Liqnic" appends the brand
+    const title = productCategory.name
+    const description =
+      productCategory.description ??
+      `Shop ${productCategory.name} at Liqnic — authentic products delivered fast in Kathmandu, Nepal.`
 
     return {
       title,
       description,
       alternates: {
-        canonical: `${params.category.join("/")}`,
+        canonical: `/${params.category.join("/")}`,
+        //          ^ added leading slash — was missing
+      },
+      openGraph: {
+        title: `${title} | Liqnic`,
+        description,
+        type: "website",
       },
     }
   } catch (err: any) {
     console.warn("Could not fetch category metadata:", err.message)
-    return {
-      title: "Category Not Available",
-      description: "Category data could not be fetched",
-    }
+    return { title: "Category Not Available" }
   }
 }
 

@@ -11,6 +11,63 @@ const manrope = Manrope({
 
 export const metadata: Metadata = {
   metadataBase: new URL(getBaseURL()),
+
+  title: {
+    default: "Liqnic | Nepal's Premier Liquor & E-Cigarette Store",
+    template: "%s | Liqnic",
+  },
+  description:
+    "Buy authentic premium liquor, IQOS ILUMA, ZYN nicotine pouches & accessories online in Nepal. Fast delivery in Kathmandu. 100% genuine products.",
+  keywords: [
+    "buy liquor online Nepal",
+    "IQOS ILUMA Nepal",
+    "ZYN nicotine pouches Nepal",
+    "e-cigarette shop Kathmandu",
+    "premium whisky Nepal",
+    "alcohol delivery Nepal",
+    "Liqnic",
+  ],
+  openGraph: {
+    type: "website",
+    siteName: "Liqnic",
+    title: "Liqnic | Nepal's Premier Liquor & E-Cigarette Store",
+    description:
+      "Authentic IQOS devices, ZYN pouches & premium spirits. Fast Kathmandu delivery. Nepal's most trusted 24/7 boutique.",
+    images: [
+      {
+        url: "/images/og-default.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Liqnic — Premium Liquor and E-Cigarettes in Nepal",
+      },
+    ],
+    locale: "en_NP",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Liqnic | Nepal's Premier Liquor & E-Cigarette Store",
+    description:
+      "Authentic IQOS, ZYN & premium spirits. Fast Kathmandu delivery.",
+    images: ["/images/og-default.jpg"],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+  applicationName: "Liqnic",
+  authors: [{ name: "Liqnic", url: getBaseURL() }],
+  referrer: "origin-when-cross-origin",
+  icons: {
+    icon: "/favicon.ico",
+    shortcut: "/favicon-16x16.png",
+    apple: "/apple-touch-icon.png",
+  },
 }
 
 export default function RootLayout(props: { children: React.ReactNode }) {

@@ -30,7 +30,9 @@ const Review = ({ cart }: { cart: any }) => {
             }
           )}
         >
-          Review
+          <h2 className="flex items-center gap-2 text-lg sm:text-xl font-semibold text-gray-900">
+            Review
+          </h2>
         </Heading>
       </div>
       {isOpen && previousStepsCompleted && (

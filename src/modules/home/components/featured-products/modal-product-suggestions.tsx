@@ -21,7 +21,7 @@ export default async function ModalProductRail({
 
   return (
     <div className="py-4">
-      <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <ul className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6">
         {pricedProducts.map((product) => (
           <li key={product.id}>
             <ProductPreview product={product} isFeatured />

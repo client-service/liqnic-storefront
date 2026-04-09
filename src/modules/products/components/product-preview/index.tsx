@@ -10,6 +10,12 @@ import Image from "next/image"
 import { useParams } from "next/navigation"
 import { useEffect, useMemo, useState } from "react"
 
+const optionsAsKeymap = (opts: any): Record<string, string> =>
+  opts?.reduce((acc: Record<string, string>, o: any) => {
+    acc[o.option_id] = o.value
+    return acc
+  }, {}) ?? {}
+
 export default function ProductPreview({
   product,
   isFeatured,
@@ -22,23 +28,18 @@ export default function ProductPreview({
   const [isAdding, setIsAdding] = useState(false)
   const countryCode = useParams().countryCode as string
 
-  const optionsAsKeymap = (opts: any) =>
-    opts?.reduce((acc: Record<string, string>, o: any) => {
-      acc[o.option_id] = o.value
-      return acc
-    }, {})
-
-  // AUTO SELECT VARIANT — same logic as product page
+  // Auto-select first variant on mount
   useEffect(() => {
     if (!product.variants?.length) return
-    const firstVariant = product.variants[0]
-    setOptions(optionsAsKeymap(firstVariant.options))
+    setOptions(optionsAsKeymap(product.variants[0].options))
   }, [product])
 
   const selectedVariant = useMemo(() => {
     if (!product.variants) return null
-    return product.variants.find((v) =>
-      isEqual(optionsAsKeymap(v.options), options)
+    return (
+      product.variants.find((v) =>
+        isEqual(optionsAsKeymap(v.options), options)
+      ) ?? null
     )
   }, [product.variants, options])
 
@@ -59,116 +60,160 @@ export default function ProductPreview({
 
   useEffect(() => {
     if (quantity > maxQuantity) setQuantity(maxQuantity)
-  }, [maxQuantity])
-
-  const incrementQuantity = () =>
-    setQuantity((q) => Math.min(q + 1, maxQuantity))
-
-  const decrementQuantity = () => setQuantity((q) => Math.max(q - 1, 1))
+  }, [maxQuantity, quantity])
 
   const handleAddToCart = async () => {
     if (!selectedVariant?.id) return
-
     setIsAdding(true)
-    await addToCart({
-      variantId: selectedVariant.id,
-      quantity,
-      countryCode,
-    })
+    await addToCart({ variantId: selectedVariant.id, quantity, countryCode })
     setIsAdding(false)
   }
 
   const imageUrl = product.thumbnail || product.images?.[0]?.url
   const { cheapestPrice } = getProductPrice({ product })
-
-  console.log("cheapestPrice →", cheapestPrice)
-  console.log(
-    "variant calculated_price →",
-    product.variants?.[0]?.calculated_price
-  )
+  // ↑ removed console.logs — never log in production card components
 
   return (
-    <div className="group w-full h-full flex flex-col border rounded-lg bg-[#F9F9F9] p-4 ">
-      {/* Image */}
-      <div className="relative w-full overflow-hidden rounded-lg flex items-center justify-center h-60 bg-gray-50">
-        {imageUrl ? (
-          <Image
-            src={imageUrl}
-            alt={product.title}
-            width={500}
-            height={500}
-            className="object-cover w-full h-full rounded-lg border scale-110 bg-white"
-          />
-        ) : (
-          <div className="text-gray-400 text-sm">No image</div>
-        )}
-      </div>
+    <div className="group w-full h-full flex flex-col rounded-lg bg-[#F9F9F9] border border-gray-100 group">
+      {/* ── Image ───────────────────────────────────────────────────────────── */}
+      <LocalizedClientLink
+        href={`/products/${product.handle}`}
+        tabIndex={-1}
+        aria-hidden
+        className="p-2 lg:p-4"
+      >
+        <div className="relative w-full h-36 xs:h-44 sm:h-52 lg:h-56 rounded-lg overflow-hidden">
+          {imageUrl ? (
+            <Image
+              src={imageUrl}
+              alt={product.title}
+              fill
+              sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+              className="object-cover !rounded-lg group-hover:scale-105 duration-300 transition-all"
+            />
+          ) : (
+            <div className="flex items-center justify-center w-full h-full text-gray-300 text-xs">
+              No image
+            </div>
+          )}
+        </div>
+      </LocalizedClientLink>
 
-      {/* Info */}
-      <div className="flex flex-col gap-2 mt-4 flex-grow">
-        <h2 className="text-base sm:text-lg font-bold line-clamp-2 min-h-[3rem]">
+      {/* ── Info + actions ──────────────────────────────────────────────────── */}
+      <div className="flex flex-col flex-grow p-2.5 sm:p-3.5 gap-2">
+        {/* Title — no reserved min-height; let it flow naturally */}
+        <h2 className="text-xs sm:text-sm font-semibold leading-snug line-clamp-2 text-gray-900">
           {product.title}
         </h2>
 
-        <p className="text-xs text-gray-500 line-clamp-2 min-h-[2rem]">
-          {product.subtitle}
-        </p>
-      </div>
-
-      {/* --- PRICE + QUANTITY (same row) --- */}
-      <div className="flex justify-between items-center mt-3">
-        {cheapestPrice ? (
-          <span className="text-sm font-semibold">
-            {cheapestPrice.original_price}
-          </span>
-        ) : (
-          <span />
+        {/* Subtitle — hide on mobile to save space, show sm+ */}
+        {product.subtitle && (
+          <p className="hidden sm:block text-xs text-gray-400 line-clamp-1">
+            {product.subtitle}
+          </p>
         )}
 
-        <div className="flex items-center gap-2">
-          <Button
-            variant="secondary"
-            onClick={decrementQuantity}
-            disabled={!selectedVariant || quantity <= 1}
-            className="h-8 w-8 p-0"
-          >
-            -
-          </Button>
+        {/* Price */}
+        {cheapestPrice && (
+          <p className="text-sm font-bold text-gray-900 mt-auto">
+            {cheapestPrice.original_price}
+          </p>
+        )}
 
-          <span className="w-8 text-center">{quantity}</span>
+        {/* ── Quantity stepper ──────────────────────────────────────────────
+            Stacked vertically on mobile — side-by-side was too cramped
+            at ~175px card width in a 2-col grid
+        ─────────────────────────────────────────────────────────────────── */}
+        <div className="flex items-center justify-between mt-1">
+          <span className="text-xs text-gray-500">Qty</span>
+          <div className="flex items-center gap-1.5">
+            <button
+              onClick={() => setQuantity((q) => Math.max(q - 1, 1))}
+              disabled={!selectedVariant || quantity <= 1}
+              aria-label="Decrease quantity"
+              className="
+                w-7 h-7 sm:w-8 sm:h-8
+                flex items-center justify-center
+                rounded-md border border-gray-200 bg-white
+                text-gray-700 font-medium text-sm
+                disabled:opacity-40 disabled:cursor-not-allowed
+                active:scale-95 transition
+                /* Native button instead of Medusa Button — more control over size */
+              "
+            >
+              −
+            </button>
 
-          <Button
-            variant="secondary"
-            onClick={incrementQuantity}
-            disabled={!selectedVariant || quantity >= maxQuantity}
-            className="h-8 w-8 p-0"
-          >
-            +
-          </Button>
+            <span className="w-6 text-center text-sm font-medium tabular-nums">
+              {quantity}
+            </span>
+
+            <button
+              onClick={() => setQuantity((q) => Math.min(q + 1, maxQuantity))}
+              disabled={!selectedVariant || quantity >= maxQuantity}
+              aria-label="Increase quantity"
+              className="
+                w-7 h-7 sm:w-8 sm:h-8
+                flex items-center justify-center
+                rounded-md border border-gray-200 bg-white
+                text-gray-700 font-medium text-sm
+                disabled:opacity-40 disabled:cursor-not-allowed
+                active:scale-95 transition
+              "
+            >
+              +
+            </button>
+          </div>
         </div>
-      </div>
 
-      {/* --- ADD TO CART + VIEW DETAILS (same row) --- */}
-      <div className="flex gap-2 mt-4">
-        {/* View details (left) */}
-        <LocalizedClientLink
-          href={`/products/${product.handle}`}
-          className="w-1/2"
-        >
-          <Button variant="secondary" className="w-full h-10">
-            View details
-          </Button>
-        </LocalizedClientLink>
+        {/* ── CTA buttons ───────────────────────────────────────────────────
+            On mobile: Add to cart full-width (primary action), View details below
+            On sm+: side by side
+        ─────────────────────────────────────────────────────────────────── */}
+        <div className="flex flex-col sm:flex-row gap-1.5 sm:gap-2 mt-2">
+          {/* Add to cart — primary, full width on mobile */}
+          <button
+            onClick={handleAddToCart}
+            disabled={!selectedVariant || !inStock || isAdding}
+            aria-label={!inStock ? "Out of stock" : "Add to cart"}
+            className="
+              w-full sm:flex-1
+              h-9 sm:h-10
+              flex items-center justify-center gap-1.5
+              rounded-md bg-black text-white
+              text-xs sm:text-sm font-medium
+              disabled:opacity-50 disabled:cursor-not-allowed
+              active:scale-[0.98] transition
+            "
+          >
+            {isAdding ? (
+              <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+            ) : !inStock ? (
+              "Out of stock"
+            ) : (
+              "Add to cart"
+            )}
+          </button>
 
-        {/* Add to cart (right) */}
-        <Button
-          onClick={handleAddToCart}
-          disabled={!selectedVariant || !inStock || isAdding}
-          isLoading={isAdding}
-          className="w-1/2 h-10 bg-black text-white"
-        >
-          {!inStock ? "Out of stock" : "Add to cart"}
-        </Button>
+          {/* View details — secondary, full width on mobile */}
+          <LocalizedClientLink
+            href={`/products/${product.handle}`}
+            className="w-full sm:flex-1"
+          >
+            <button
+              className="
+              w-full
+              h-9 sm:h-10
+              flex items-center justify-center
+              rounded-md border border-gray-200 bg-white
+              text-xs sm:text-sm font-medium text-gray-700
+              hover:bg-gray-50 active:scale-[0.98] transition
+            "
+            >
+              View details
+            </button>
+          </LocalizedClientLink>
+        </div>
       </div>
     </div>
   )

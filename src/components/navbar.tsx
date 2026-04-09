@@ -16,11 +16,17 @@ export default async function Navbar() {
   const MENU_ITEMS: MenuItem[] = await buildMenuItems()
 
   return (
-    <nav className="w-full h-[71px] bg-white border-b border-gray-200 top-0 sticky z-40">
+    <nav className="w-full py-2 bg-white border-b border-gray-200 top-0 sticky z-40">
       <div className="component-px h-full flex items-center justify-between">
         {/* Logo */}
         <Link href="/" className="flex items-center">
-          <Image src="/logo.png" alt="Liqnic" width={100} height={100} />
+          <Image
+            src="/logo.png"
+            alt="Liqnic"
+            width={100}
+            height={100}
+            className="w-12 md:w-32"
+          />
         </Link>
 
         {/* Desktop Menu */}

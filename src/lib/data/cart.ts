@@ -33,6 +33,7 @@ export async function retrieveCart(cartId?: string) {
 
   const next = {
     ...(await getCacheOptions("carts")),
+    revalidate: 60,
   }
 
   return await sdk.client
@@ -457,6 +458,7 @@ export async function listCartOptions() {
   }
   const next = {
     ...(await getCacheOptions("shippingOptions")),
+    revalidate: 60,
   }
 
   return await sdk.client.fetch<{
