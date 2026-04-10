@@ -30,11 +30,11 @@ const ProductTemplate = async ({
   return (
     <>
       <section
-        className="grid grid-cols-1 md:grid-cols-6 gap-8 lg:gap-16 component-px w-full py-8 lg:py-16 bg-gray-100"
+        className="w-full grid grid-cols-1 md:grid-cols-7 md:gap-8 component-px py-8 lg:py-16 bg-gray-100"
         data-testid="product-container"
       >
         {/* Left Section (Gallery + Info) */}
-        <div className="md:col-span-4">
+        <div className="md:col-span-4 w-full">
           <ProductGalleryClient
             images={product?.images || []}
             title={product?.title}
@@ -42,7 +42,7 @@ const ProductTemplate = async ({
         </div>
 
         {/* Right Section (Details + Actions) */}
-        <aside className="col-span-2 flex flex-col small:sticky small:top-48 w-full py-8 gap-y-6">
+        <aside className="col-span-3 flex flex-col small:sticky small:top-48 w-full py-8 gap-y-6 md:px-4">
           {/* Tags */}
           <div className="flex gap-2">
             <span className="px-2 py-0 bg-success-light text-success text-sm font-bold rounded">
@@ -79,7 +79,7 @@ const ProductTemplate = async ({
           <hr />
 
           {/* Variants */}
-          {product?.variants?.length > 0 && (
+          {/* {product?.variants?.length > 0 && (
             <div className="flex flex-col gap-4">
               <label className="text-gray-600 text-sm font-normal">
                 Variant
@@ -95,7 +95,7 @@ const ProductTemplate = async ({
                 ))}
               </div>
             </div>
-          )}
+          )} */}
 
           {/* CTA + Actions */}
           <ProductOnboardingCta />

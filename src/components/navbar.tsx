@@ -1,4 +1,3 @@
-// components/Navbar.tsx
 import { listRegions } from "@lib/data/regions"
 import { buildMenuItems, MenuItem } from "@lib/menu"
 import { StoreRegion } from "@medusajs/types"
@@ -29,25 +28,23 @@ export default async function Navbar() {
           />
         </Link>
 
-        {/* Desktop Menu */}
+        {/* Desktop nav links */}
         <div className="hidden lg:flex items-center gap-[25px]">
           {MENU_ITEMS.map((item) =>
             item.dropdown ? (
-              <div key={item.label} className="relative group ">
-                <div className="flex items-center gap-[5px] cursor-pointer!">
+              <div key={item.label} className="relative group">
+                <div className="flex items-center gap-[5px] cursor-pointer">
                   <span className="text-black text-[14.4px] font-medium leading-[150%] group-hover:text-[#C5A163] transition-colors font-manrope">
                     {item.label}
                   </span>
                   <ChevronDown className="w-4 h-4 text-black group-hover:text-[#C5A163] transition-colors" />
                 </div>
-
-                {/* Dropdown menu */}
-                <div className=" cursor-pointer! absolute top-full left-0 mt-2 w-40 lg:w-60 bg-white border rounded-lg  border-gray-200 shadow-lg opacity-0 invisible group-hover:visible group-hover:opacity-100 transition-all">
+                <div className="absolute top-full left-0 mt-2 w-40 lg:w-60 bg-white border rounded-lg border-gray-200 shadow-lg opacity-0 invisible group-hover:visible group-hover:opacity-100 transition-all z-50">
                   {item.children?.map((child) => (
                     <Link
                       key={child.label}
                       href={child.href || "#"}
-                      className="block px-4 py-2 text-black hover:bg-gray-100"
+                      className="block px-4 py-2 text-sm text-black hover:bg-gray-50 first:rounded-t-lg last:rounded-b-lg"
                     >
                       {child.label}
                     </Link>
@@ -66,19 +63,19 @@ export default async function Navbar() {
           )}
         </div>
 
-        <div className="flex space-x-2 lg:space-x-8 items-center">
-          <div className="hidden small:flex items-center gap-x-6 h-full">
-            <LocalizedClientLink
-              className="hover:text-ui-fg-base flex items-center gap-1.5"
-              href="/account"
-              data-testid="nav-account-link"
-            >
-              <LuUser className="w-5 h-5" />
-              <span className="text-[14.4px] font-medium font-manrope">
-                My Account
-              </span>
-            </LocalizedClientLink>
-          </div>
+        {/* Right side actions */}
+        <div className="flex items-center gap-2 sm:gap-4 lg:gap-8">
+          {/* My Account — desktop only (mobile gets it in SideMenu) */}
+          <LocalizedClientLink
+            className="hidden lg:flex items-center gap-1.5 hover:text-[#C5A163] transition-colors"
+            href="/account"
+            data-testid="nav-account-link"
+          >
+            <LuUser className="w-5 h-5" />
+            <span className="text-[14.4px] font-medium font-manrope">
+              My Account
+            </span>
+          </LocalizedClientLink>
 
           {/* Cart */}
           <Suspense
@@ -94,7 +91,8 @@ export default async function Navbar() {
           >
             <CartButton />
           </Suspense>
-          {/* Mobile Menu */}
+
+          {/* Mobile hamburger */}
           <div className="lg:hidden">
             <SideMenu regions={regions} menuItems={MENU_ITEMS} />
           </div>

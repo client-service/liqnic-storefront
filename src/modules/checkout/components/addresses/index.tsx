@@ -34,7 +34,7 @@ const Addresses = ({
   )
 
   const handleEdit = () => router.push(pathname + "?step=address")
-  const [message, formAction] = useActionState(setAddresses, null)
+  const [message, formAction, isPending] = useActionState(setAddresses, null)
 
   return (
     <div className="bg-white">
@@ -76,18 +76,27 @@ const Addresses = ({
               </div>
             )}
 
-            <SubmitButton
+            <button
+              type="submit"
+              disabled={isPending}
               className="
-                w-full h-12
-                rounded-xl bg-black hover:bg-gray-900
-                text-white text-sm font-semibold
-                active:scale-[0.98] transition-all
-                disabled:opacity-50
-              "
+    w-full h-12
+    rounded-xl bg-black hover:bg-gray-900
+    text-white text-sm font-semibold
+    active:scale-[0.98] transition-all
+    disabled:opacity-50
+  "
               data-testid="submit-address-button"
             >
-              Continue to delivery
-            </SubmitButton>
+              {isPending ? (
+                <span className="flex items-center justify-center gap-2">
+                  <Spinner />
+                  Processing...
+                </span>
+              ) : (
+                "Continue to delivery"
+              )}
+            </button>
 
             <ErrorMessage error={message} data-testid="address-error-message" />
           </div>

@@ -2,7 +2,6 @@
 
 import { placeOrder } from "@lib/data/cart"
 import { HttpTypes } from "@medusajs/types"
-import { Button } from "@medusajs/ui"
 import React, { useState } from "react"
 import ErrorMessage from "../error-message"
 
@@ -27,9 +26,10 @@ const PaymentButton: React.FC<PaymentButtonProps> = ({
 
   const handlePayment = async () => {
     setSubmitting(true)
+    setErrorMessage(null)
 
     try {
-      // ✅ Ensure cart has a proper COD payment_collection
+      // Ensure cart has a proper COD payment_collection
       if (!cart.payment_collection) {
         cart.payment_collection = {
           id: "fake-cod-collection",
@@ -41,7 +41,7 @@ const PaymentButton: React.FC<PaymentButtonProps> = ({
         }
       }
 
-      // ✅ Add a fake COD payment session
+      // Add a fake COD payment session if not present
       if (
         !cart.payment_collection.payment_sessions?.find(
           (ps) => ps.provider_id === "pp_system_default"
@@ -59,7 +59,13 @@ const PaymentButton: React.FC<PaymentButtonProps> = ({
 
       await placeOrder()
     } catch (err: any) {
-      setErrorMessage(err.message)
+      // Next.js redirect() throws a special NEXT_REDIRECT error internally.
+      // This is NOT a real error — if we catch it we must let it propagate
+      // so the redirect to order confirmation actually happens.
+      if (err?.digest?.startsWith("NEXT_REDIRECT")) {
+        return
+      }
+      setErrorMessage(err.message ?? "Something went wrong. Please try again.")
     } finally {
       setSubmitting(false)
     }
@@ -67,16 +73,28 @@ const PaymentButton: React.FC<PaymentButtonProps> = ({
 
   return (
     <>
-      <Button
-        disabled={notReady}
-        isLoading={submitting}
+      <button
+        disabled={notReady || submitting}
         onClick={handlePayment}
-        size="large"
         data-testid={dataTestId}
-        className="bg-primary"
+        className="
+         w-auto px-6 h-12 rounded-xl
+          flex items-center justify-center gap-2
+          bg-black hover:bg-gray-900 text-white
+          text-sm font-semibold
+          disabled:opacity-50 disabled:cursor-not-allowed
+          active:scale-[0.98] transition-all
+        "
       >
-        Place order
-      </Button>
+        {submitting ? (
+          <>
+            <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+            Placing order...
+          </>
+        ) : (
+          "Place order"
+        )}
+      </button>
 
       <ErrorMessage
         error={errorMessage}
