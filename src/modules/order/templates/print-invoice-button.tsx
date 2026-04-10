@@ -10,6 +10,7 @@ type Props = {
 
 export default function PrintInvoiceButton({ order }: Props) {
   const [open, setOpen] = useState(false)
+  const [isDownloading, setIsDownloading] = useState(false)
   const printRef = useRef<HTMLDivElement>(null)
 
   const currency_code = order.currency_code
@@ -20,7 +21,6 @@ export default function PrintInvoiceButton({ order }: Props) {
   const taxRate = taxLine?.rate ?? 0
   const shippingAddress = order.shipping_address
 
-  // Lock body scroll when modal is open
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : ""
     return () => {
@@ -28,7 +28,6 @@ export default function PrintInvoiceButton({ order }: Props) {
     }
   }, [open])
 
-  // Close on Escape
   useEffect(() => {
     if (!open) return
     const handler = (e: KeyboardEvent) => {
@@ -38,44 +37,62 @@ export default function PrintInvoiceButton({ order }: Props) {
     return () => window.removeEventListener("keydown", handler)
   }, [open])
 
-  const handlePrint = () => {
+  const handleDownload = async () => {
     const content = printRef.current
     if (!content) return
-    const printWindow = window.open("", "_blank", "width=800,height=600")
-    if (!printWindow) return
 
-    printWindow.document.write(`
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <title>Invoice - ${order.display_id}</title>
-          <style>
-            * { margin: 0; padding: 0; box-sizing: border-box; }
-            body { font-family: Arial, sans-serif; font-size: 13px; color: #111; padding: 40px; }
-            .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 32px; }
-            .store-name { font-size: 24px; font-weight: bold; }
-            .invoice-meta { text-align: right; color: #555; }
-            .invoice-meta h2 { font-size: 20px; font-weight: bold; color: #111; margin-bottom: 4px; }
-            .section { margin-bottom: 24px; }
-            .section-title { font-size: 11px; text-transform: uppercase; color: #888; margin-bottom: 8px; letter-spacing: 0.5px; }
-            table { width: 100%; border-collapse: collapse; }
-            thead tr { background: #f5f5f5; }
-            th { text-align: left; padding: 10px 12px; font-size: 12px; border-bottom: 1px solid #e5e5e5; }
-            td { padding: 10px 12px; border-bottom: 1px solid #f0f0f0; vertical-align: top; }
-            .text-right { text-align: right; }
-            .totals-table td { border: none; padding: 6px 12px; }
-            .totals-table tr.total-row td { font-weight: bold; font-size: 15px; border-top: 2px solid #111; padding-top: 10px; }
-            .footer { margin-top: 48px; text-align: center; color: #888; font-size: 12px; border-top: 1px solid #e5e5e5; padding-top: 16px; }
-            @media print { body { padding: 20px; } button { display: none; } }
-          </style>
-        </head>
-        <body>${content.innerHTML}</body>
-      </html>
-    `)
-    printWindow.document.close()
-    printWindow.focus()
-    setTimeout(() => printWindow.print(), 500)
+    setIsDownloading(true)
+    try {
+      const { default: jsPDF } = await import("jspdf")
+      const { default: html2canvas } = await import("html2canvas")
+
+      const canvas = await html2canvas(content, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: "#ffffff",
+      })
+
+      const imgData = canvas.toDataURL("image/png")
+      const pdf = new jsPDF({
+        orientation: "portrait",
+        unit: "mm",
+        format: "a4",
+      })
+
+      const pageWidth = pdf.internal.pageSize.getWidth()
+      const pageHeight = pdf.internal.pageSize.getHeight()
+      const imgWidth = pageWidth
+      const imgHeight = (canvas.height * pageWidth) / canvas.width
+
+      let yOffset = 0
+      while (yOffset < imgHeight) {
+        if (yOffset > 0) pdf.addPage()
+        pdf.addImage(imgData, "PNG", 0, -yOffset, imgWidth, imgHeight)
+        yOffset += pageHeight
+      }
+
+      pdf.save(`invoice-${order.display_id}.pdf`)
+    } finally {
+      setIsDownloading(false)
+    }
   }
+
+  const DownloadIcon = () => (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      className="w-4 h-4"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      strokeWidth={1.8}
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5 5-5M12 3v12"
+      />
+    </svg>
+  )
 
   return (
     <>
@@ -91,81 +108,98 @@ export default function PrintInvoiceButton({ order }: Props) {
           active:scale-[0.98] transition-all
         "
       >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          className="w-4 h-4 text-gray-500"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          strokeWidth={1.8}
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2M6 14h12v8H6v-8z"
-          />
-        </svg>
-        Print Invoice
+        <DownloadIcon />
+        Download Invoice
       </button>
 
       {/* ── Modal ───────────────────────────────────────────────────────── */}
       {open && (
         <>
-          {/* Backdrop */}
+          {/* Backdrop — also acts as the flex centering layer on desktop */}
           <div
-            className="fixed inset-0 z-50 bg-black/50"
+            className="
+              fixed inset-0 z-50 bg-black/50
+              sm:flex sm:items-center sm:justify-center
+              sm:pt-16
+            "
             onClick={() => setOpen(false)}
             aria-hidden="true"
           />
 
-          {/* Panel — bottom sheet on mobile, centered on sm+ */}
           <div
             role="dialog"
             aria-modal="true"
             aria-label="Invoice preview"
+            onClick={(e) => e.stopPropagation()}
             className="
               fixed z-50 bg-white
-              /* Mobile: full-width bottom sheet */
               bottom-0 left-0 right-0 rounded-t-2xl
-              /* sm+: centered modal */
-              sm:inset-auto sm:top-1/2 sm:left-1/2
-              sm:-translate-x-1/2 sm:-translate-y-1/2
               sm:rounded-2xl sm:w-full sm:max-w-2xl
-              /* Height */
-              max-h-[92dvh] sm:max-h-[88vh]
-              flex flex-col
-              shadow-2xl
+              sm:top-1/2 sm:left-1/2
+              sm:-translate-x-1/2 sm:-translate-y-1/2
+              sm:mt-10
+              max-h-[92dvh] sm:max-h-[80vh]
+              flex flex-col shadow-2xl
             "
           >
-            {/* Modal header — sticky */}
+            {/* Modal header */}
             <div className="flex items-center justify-between px-4 sm:px-6 py-3.5 border-b border-gray-100 flex-shrink-0">
               <h2 className="text-base font-semibold text-gray-900">
                 Invoice Preview
               </h2>
               <div className="flex items-center gap-2">
                 <button
-                  onClick={handlePrint}
+                  onClick={handleDownload}
+                  disabled={isDownloading}
                   className="
                     flex items-center gap-1.5 h-9 px-4 rounded-lg
                     bg-black text-white text-sm font-medium
                     hover:bg-gray-900 active:scale-95 transition-all
+                    disabled:opacity-60 disabled:cursor-not-allowed
                   "
                 >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="w-3.5 h-3.5"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    strokeWidth={1.8}
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2M6 14h12v8H6v-8z"
-                    />
-                  </svg>
-                  Print
+                  {isDownloading ? (
+                    <>
+                      <svg
+                        className="w-3.5 h-3.5 animate-spin"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="3"
+                        />
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8v8H4z"
+                        />
+                      </svg>
+                      Downloading…
+                    </>
+                  ) : (
+                    <>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="w-3.5 h-3.5"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        strokeWidth={1.8}
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5 5-5M12 3v12"
+                        />
+                      </svg>
+                      Download
+                    </>
+                  )}
                 </button>
                 <button
                   onClick={() => setOpen(false)}
@@ -251,11 +285,7 @@ export default function PrintInvoiceButton({ order }: Props) {
                   </p>
                 </div>
 
-                {/* ── Items ─────────────────────────────────────────────────
-                    Mobile: 3 columns (Item, Qty, Total) — drop Unit Price
-                    Desktop: 4 columns including Unit Price
-                    Unit price is a nice-to-have but breaks layout on phones
-                ─────────────────────────────────────────────────────────── */}
+                {/* Items */}
                 <div className="mb-5 sm:mb-6 overflow-x-auto">
                   <table className="w-full text-xs sm:text-sm min-w-[280px]">
                     <thead>
@@ -266,7 +296,6 @@ export default function PrintInvoiceButton({ order }: Props) {
                         <th className="text-center py-2.5 px-2 sm:px-3 font-medium text-gray-600 w-10">
                           Qty
                         </th>
-                        {/* Unit price hidden on mobile */}
                         <th className="hidden sm:table-cell text-right py-2.5 px-3 font-medium text-gray-600">
                           Unit Price
                         </th>
@@ -303,9 +332,7 @@ export default function PrintInvoiceButton({ order }: Props) {
                   </table>
                 </div>
 
-                {/* ── Totals ─────────────────────────────────────────────────
-                    Full width on mobile instead of fixed w-64 which overflowed
-                ─────────────────────────────────────────────────────────── */}
+                {/* Totals */}
                 <div className="flex justify-end">
                   <table className="w-full sm:w-72 text-xs sm:text-sm">
                     <tbody>

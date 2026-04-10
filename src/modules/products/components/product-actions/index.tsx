@@ -11,6 +11,8 @@ import ProductPrice from "../product-price"
 import MobileActions from "./mobile-actions"
 import { isEqual } from "lodash"
 import { useParams } from "next/navigation"
+import Image from "next/image"
+import { toast, Id } from "react-toastify"
 
 type ProductActionsProps = {
   product: HttpTypes.StoreProduct
@@ -20,12 +22,113 @@ type ProductActionsProps = {
 
 const optionsAsKeymap = (
   variantOptions: HttpTypes.StoreProductVariant["options"]
-) => {
-  return variantOptions?.reduce((acc: Record<string, string>, varopt: any) => {
+) =>
+  variantOptions?.reduce((acc: Record<string, string>, varopt: any) => {
     acc[varopt.option_id] = varopt.value
     return acc
   }, {})
+
+// ─── Toast content components ─────────────────────────────────────────────────
+
+function CartSuccessToast({
+  title,
+  thumbnail,
+}: {
+  title: string
+  thumbnail?: string
+}) {
+  return (
+    <div className="flex items-center gap-3 min-w-0">
+      {thumbnail && (
+        <div className="relative w-10 h-10 shrink-0 rounded-md overflow-hidden bg-gray-100">
+          <Image src={thumbnail} alt={title} fill className="object-cover" />
+        </div>
+      )}
+      <div className="min-w-0 flex-1">
+        <p className="text-xs font-semibold text-gray-900 truncate">{title}</p>
+        <p className="text-xs text-gray-500 mt-0.5">Added to your cart</p>
+      </div>
+      <svg
+        className="shrink-0 ml-auto text-emerald-500"
+        width="18"
+        height="18"
+        viewBox="0 0 18 18"
+        fill="none"
+      >
+        <circle cx="9" cy="9" r="9" fill="currentColor" opacity="0.15" />
+        <path
+          d="M5.5 9l2.5 2.5 4.5-5"
+          stroke="currentColor"
+          strokeWidth="1.6"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+    </div>
+  )
 }
+
+function CartErrorToast({
+  message,
+  onRetry,
+}: {
+  message: string
+  onRetry: () => void
+}) {
+  return (
+    <div className="flex items-start gap-3 min-w-0">
+      <svg
+        className="shrink-0 mt-0.5 text-rose-500"
+        width="18"
+        height="18"
+        viewBox="0 0 18 18"
+        fill="none"
+      >
+        <circle cx="9" cy="9" r="9" fill="currentColor" opacity="0.15" />
+        <path
+          d="M6 6l6 6M12 6l-6 6"
+          stroke="currentColor"
+          strokeWidth="1.6"
+          strokeLinecap="round"
+        />
+      </svg>
+      <div className="min-w-0 flex-1">
+        <p className="text-xs font-semibold text-gray-900">Couldn't add item</p>
+        <p className="text-xs text-gray-500 mt-0.5 line-clamp-2">{message}</p>
+        <button
+          onClick={onRetry}
+          className="mt-1.5 text-xs font-medium text-rose-600 hover:text-rose-700 underline underline-offset-2"
+        >
+          Try again
+        </button>
+      </div>
+    </div>
+  )
+}
+
+// ─── Shared toast base options ────────────────────────────────────────────────
+
+const baseToastStyle: React.CSSProperties = {
+  background: "#ffffff",
+  border: "1px solid #f0f0f0",
+  borderRadius: "12px",
+  padding: "12px 14px",
+  boxShadow: "0 4px 16px 0 rgba(0,0,0,0.08)",
+  minWidth: "260px",
+  maxWidth: "340px",
+}
+
+const baseToastOpts = {
+  position: "top-center" as const,
+  hideProgressBar: false,
+  closeOnClick: false,
+  pauseOnHover: true,
+  draggable: true,
+  closeButton: false,
+  style: baseToastStyle,
+}
+
+// ─── Component ────────────────────────────────────────────────────────────────
 
 export default function ProductActions({
   product,
@@ -34,9 +137,11 @@ export default function ProductActions({
   const [options, setOptions] = useState<Record<string, string | undefined>>({})
   const [isAdding, setIsAdding] = useState(false)
   const [quantity, setQuantity] = useState(1)
+
   const countryCode = useParams().countryCode as string
   const actionsRef = useRef<HTMLDivElement>(null)
   const inView = useIntersection(actionsRef, "0px")
+  const successToastId = useRef<Id | null>(null)
 
   useEffect(() => {
     if (product.variants?.length === 1) {
@@ -46,17 +151,19 @@ export default function ProductActions({
   }, [product.variants])
 
   const selectedVariant = useMemo(() => {
-    if (!product.variants || product.variants.length === 0) return
+    if (!product.variants?.length) return
     return product.variants.find((v) =>
       isEqual(optionsAsKeymap(v.options), options)
     )
   }, [product.variants, options])
 
-  const isValidVariant = useMemo(() => {
-    return product.variants?.some((v) =>
-      isEqual(optionsAsKeymap(v.options), options)
-    )
-  }, [product.variants, options])
+  const isValidVariant = useMemo(
+    () =>
+      product.variants?.some((v) =>
+        isEqual(optionsAsKeymap(v.options), options)
+      ),
+    [product.variants, options]
+  )
 
   const inStock = useMemo(() => {
     if (!selectedVariant) return false
@@ -65,7 +172,6 @@ export default function ProductActions({
     return (selectedVariant.inventory_quantity || 0) > 0
   }, [selectedVariant])
 
-  // Max quantity allowed (stock or 10)
   const maxQuantity = useMemo(() => {
     if (!selectedVariant) return 1
     const available = selectedVariant.manage_inventory
@@ -74,15 +180,53 @@ export default function ProductActions({
     return Math.min(available, 10)
   }, [selectedVariant])
 
+  const thumbnail = product.thumbnail || product.images?.[0]?.url
+
+  const showSuccessToast = () => {
+    const content = (
+      <CartSuccessToast title={product.title} thumbnail={thumbnail} />
+    )
+    const opts = {
+      ...baseToastOpts,
+      autoClose: 3000 as const,
+      progressStyle: { background: "#10b981" },
+    }
+
+    if (successToastId.current && toast.isActive(successToastId.current)) {
+      toast.update(successToastId.current, { render: content, ...opts })
+    } else {
+      successToastId.current = toast.success(content, opts)
+    }
+  }
+
+  const showErrorToast = (message: string) => {
+    toast.error(
+      <CartErrorToast
+        message={message}
+        onRetry={() => {
+          toast.dismiss()
+          handleAddToCart()
+        }}
+      />,
+      {
+        ...baseToastOpts,
+        autoClose: 6000,
+        progressStyle: { background: "#f43f5e" },
+      }
+    )
+  }
+
   const handleAddToCart = async () => {
     if (!selectedVariant?.id) return
     setIsAdding(true)
-    await addToCart({
-      variantId: selectedVariant.id,
-      quantity,
-      countryCode,
-    })
-    setIsAdding(false)
+    try {
+      await addToCart({ variantId: selectedVariant.id, quantity, countryCode })
+      showSuccessToast()
+    } catch (err: any) {
+      showErrorToast(err?.message ?? "Failed to add to cart. Please try again.")
+    } finally {
+      setIsAdding(false)
+    }
   }
 
   const incrementQuantity = () =>

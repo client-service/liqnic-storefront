@@ -9,6 +9,8 @@ import Footer from "@modules/layout/templates/footer"
 import FreeShippingPriceNudge from "@modules/shipping/components/free-shipping-price-nudge"
 import Navbar from "components/navbar"
 import PromoBanner from "components/promo-banner"
+import { ToastContainer } from "react-toastify"
+import "react-toastify/dist/ReactToastify.css"
 
 export const metadata: Metadata = {
   metadataBase: new URL(getBaseURL()),
@@ -44,6 +46,14 @@ export default async function PageLayout(props: { children: React.ReactNode }) {
       )}
 
       <Footer />
+      <ToastContainer
+        toastClassName="custom-toast"
+        hideProgressBar
+        closeOnClick
+        pauseOnHover
+        draggable
+        theme="light"
+      />
     </>
   )
 }

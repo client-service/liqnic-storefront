@@ -2,8 +2,6 @@
 
 import { useState, useEffect } from "react"
 import AgeVerificationModal from "./AgeVerificationModal"
-import { ToastContainer } from "react-toastify"
-import "react-toastify/dist/ReactToastify.css"
 
 export default function AgeVerificationWrapper({
   children,
@@ -41,17 +39,6 @@ export default function AgeVerificationWrapper({
       <AgeVerificationModal
         isOpen={modalOpen}
         onVerificationComplete={handleVerificationComplete}
-      />
-
-      <ToastContainer
-        position="top-center"
-        autoClose={5000}
-        hideProgressBar
-        closeOnClick
-        pauseOnHover
-        draggable
-        theme="light"
-        toastClassName="custom-toast"
       />
     </>
   )
