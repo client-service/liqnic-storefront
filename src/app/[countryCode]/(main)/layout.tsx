@@ -11,6 +11,7 @@ import Navbar from "components/navbar"
 import PromoBanner from "components/promo-banner"
 import { ToastContainer } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
+import AgeVerificationWrapper from "components/AgeVerificationWrapper"
 
 export const metadata: Metadata = {
   metadataBase: new URL(getBaseURL()),
@@ -28,7 +29,7 @@ export default async function PageLayout(props: { children: React.ReactNode }) {
   }
 
   return (
-    <>
+    <AgeVerificationWrapper>
       <PromoBanner />
       <Navbar />
       <main className="min-h-screen overflow-hidden">{props.children}</main>
@@ -54,6 +55,6 @@ export default async function PageLayout(props: { children: React.ReactNode }) {
         draggable
         theme="light"
       />
-    </>
+    </AgeVerificationWrapper>
   )
 }

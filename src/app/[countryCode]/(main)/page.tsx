@@ -211,59 +211,57 @@ export default async function Home({
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      <AgeVerificationWrapper>
-        <Hero />
-        <IllumaAd
-          src="https://res.cloudinary.com/do9wvb32d/video/upload/v1775184129/iqos_iluma_ad_1_c8hd3h.mp4"
-          poster="/images/video-thumbnail.jpg"
-        />
+      <Hero />
+      <IllumaAd
+        src="https://res.cloudinary.com/do9wvb32d/video/upload/v1775184129/iqos_iluma_ad_1_c8hd3h.mp4"
+        poster="/images/video-thumbnail.jpg"
+      />
 
-        <Features />
-        {collections && region ? (
-          // Reduced horizontal padding on mobile so cards have more room
-          <div className="px-4 sm:component-px py-8 ">
-            {/* Header */}
-            <div className="flex flex-col items-center gap-1.5 text-center ">
-              <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 tracking-tight">
-                The Collection
-              </h2>
-              <p className="text-sm sm:text-base text-gray-500">
-                Where fine spirits meet premium smoke.
-              </p>
-            </div>
-            <div className="flex justify-end ">
-              <Link
-                href="/shop"
-                className="inline-flex items-center gap-1.5 text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors /* Minimum 44px tap target height for mobile */ min-h-[44px] px-2"
-              >
-                View all
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-4 w-4"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth={2}
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M9 5l7 7-7 7"
-                  />
-                </svg>
-              </Link>
-            </div>
-
-            <FeaturedProducts region={region} />
+      <Features />
+      {collections && region ? (
+        // Reduced horizontal padding on mobile so cards have more room
+        <div className="px-4 sm:component-px py-8 ">
+          {/* Header */}
+          <div className="flex flex-col items-center gap-1.5 text-center ">
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 tracking-tight">
+              The Collection
+            </h2>
+            <p className="text-sm sm:text-base text-gray-500">
+              Where fine spirits meet premium smoke.
+            </p>
           </div>
-        ) : // Don't show raw text to real users — just render nothing
-        null}
+          <div className="flex justify-end ">
+            <Link
+              href="/shop"
+              className="inline-flex items-center gap-1.5 text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors /* Minimum 44px tap target height for mobile */ min-h-[44px] px-2"
+            >
+              View all
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-4 w-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M9 5l7 7-7 7"
+                />
+              </svg>
+            </Link>
+          </div>
 
-        <IcosDeviceShowcase />
-        <ZYNProductsShowcase />
-        <LiquorShowcase />
-        <IqosDeviceSection />
-      </AgeVerificationWrapper>
+          <FeaturedProducts region={region} />
+        </div>
+      ) : // Don't show raw text to real users — just render nothing
+      null}
+
+      <IcosDeviceShowcase />
+      <ZYNProductsShowcase />
+      <LiquorShowcase />
+      <IqosDeviceSection />
     </>
   )
 }
