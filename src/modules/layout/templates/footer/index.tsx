@@ -173,12 +173,12 @@ export default function Footer() {
                   Disclaimer
                 </Link> */}
                 {/* Shipping & Returns page not yet available */}
-                {/* <Link
-                  href="/shipping-return-policy"
+                <Link
+                  href="/return-policy"
                   className="text-[#606060] text-[13px] font-medium leading-[20px] hover:text-[#C5A163] transition-colors font-manrope"
                 >
-                  Shipping and Returns
-                </Link> */}
+                  Return Policy
+                </Link>
               </div>
             </div>
 
@@ -188,12 +188,12 @@ export default function Footer() {
                 Contact
               </h3>
               <div className="flex flex-col items-start gap-[6px]">
-                {/* <div className="flex items-center gap-[10px]">
+                <div className="flex items-center gap-[10px]">
                   <LuPhone className="w-4 h-4 text-black" />
                   <span className="text-[#606060] text-[13px] font-medium leading-[20px] font-manrope">
-                    +977 9823123457
+                    +977 9802532700
                   </span>
-                </div> */}
+                </div>
                 <div className="flex items-center gap-[10px]">
                   <LuMail className="w-4 h-4 text-black" />
                   <span className="text-[#606060] text-[13px] font-medium leading-[20px] font-manrope">

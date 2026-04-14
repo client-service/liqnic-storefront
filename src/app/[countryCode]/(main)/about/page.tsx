@@ -78,10 +78,7 @@ export default function About() {
           {/* Right — Content */}
           <div className="flex flex-col pt-2">
             {/* Mission */}
-            <div className="flex flex-col gap-3 py-7 border-t border-[#EAE5DC]">
-              <span className="text-[11px] text-[#C5A163] font-medium tracking-[0.08em]">
-                01
-              </span>
+            <div className="flex flex-col gap-3 py-7 ">
               <h3 className="font-['Playfair_Display'] text-[30px] font-normal text-[#1E1C18] leading-tight">
                 Our Mission
               </h3>
@@ -93,10 +90,7 @@ export default function About() {
             </div>
 
             {/* Vision */}
-            <div className="flex flex-col gap-3 py-7 border-t border-b border-[#EAE5DC]">
-              <span className="text-[11px] text-[#C5A163] font-medium tracking-[0.08em]">
-                02
-              </span>
+            <div className="flex flex-col gap-3 py-7 border-t  border-[#EAE5DC]">
               <h3 className="font-['Playfair_Display'] text-[30px] font-normal text-[#1E1C18] leading-tight">
                 Our Vision
               </h3>
@@ -147,6 +141,50 @@ export default function About() {
 
             {/* Bottom subtle line */}
             <div className="mt-4 h-[1px] w-16 bg-gray-300"></div>
+          </div>
+        </div>
+      </section>
+
+      {/* Company Details */}
+      <section className="w-full px-4 lg:px-[100px] py-8 sm:py-12 lg:py-16 bg-[#FAFAF8]">
+        <div className="max-w-[900px] mx-auto">
+          <h2 className="text-[#C5A163] text-xl sm:text-[25px] leading-[150%] mb-2">
+            Company Details
+          </h2>
+          <h3 className="text-[#323232] text-2xl sm:text-[30px] font-bold leading-tight tracking-tight mb-8">
+            Business Information
+          </h3>
+
+          <div className="border border-[#EAE5DC] rounded-xl overflow-hidden">
+            {[
+              { label: "E-Commerce Platform Name", value: "Liqnic" },
+              {
+                label: "Company Name",
+                value: "Khirkhirya Enterprises Pvt. Ltd.",
+              },
+              { label: "Company Address", value: "Kathmandu, Nepal" },
+              {
+                label: "Business Activities",
+                value:
+                  "Online retail of premium liquor and e-cigarette products",
+              },
+              { label: "Business Email", value: "liqnichost@gmail.com" },
+              { label: "Business Phone", value: "+977-9802532700" },
+            ].map(({ label, value }, i, arr) => (
+              <div
+                key={label}
+                className={`grid grid-cols-2 sm:grid-cols-5 px-6 py-4 ${
+                  i !== arr.length - 1 ? "border-b border-[#EAE5DC]" : ""
+                } ${i % 2 === 0 ? "bg-white" : "bg-[#FAFAF8]"}`}
+              >
+                <p className="col-span-1 sm:col-span-2 text-xs font-medium uppercase tracking-widest text-[#A08B6E]">
+                  {label}
+                </p>
+                <p className="col-span-1 sm:col-span-3 text-sm text-[#323232]">
+                  {value}
+                </p>
+              </div>
+            ))}
           </div>
         </div>
       </section>

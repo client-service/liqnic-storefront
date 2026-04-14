@@ -241,7 +241,7 @@ export default function Contact() {
                       </div>
 
                       {/* Phone Card */}
-                      {/* <div className="flex items-center gap-4 lg:gap-[15px] p-4 sm:p-5 lg:p-[20px] bg-[#F9F9F9] rounded-[5px]">
+                      <div className="flex items-center gap-4 lg:gap-[15px] p-4 sm:p-5 lg:p-[20px] bg-[#F9F9F9] rounded-[5px]">
                         <div className="w-12 h-12 lg:w-[49px] lg:h-[49px] bg-[#EDE2CF] rounded-[5px] flex items-center justify-center shrink-0">
                           <svg
                             width="24"
@@ -264,10 +264,10 @@ export default function Contact() {
                             Phone
                           </h3>
                           <p className="text-black text-sm lg:text-[14.4px] font-medium leading-[150%] font-manrope">
-                            98605912345
+                            9802532700
                           </p>
                         </div>
-                      </div> */}
+                      </div>
 
                       {/* Delivery Time Card */}
                       <div className="flex items-center gap-4 lg:gap-[15px] p-4 sm:p-5 lg:p-[20px] bg-[#F9F9F9] rounded-[5px]">

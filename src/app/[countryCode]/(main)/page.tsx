@@ -217,7 +217,6 @@ export default async function Home({
         poster="/images/video-thumbnail.jpg"
       />
 
-      <Features />
       {collections && region ? (
         // Reduced horizontal padding on mobile so cards have more room
         <div className="px-4 sm:component-px py-8 ">
@@ -257,7 +256,7 @@ export default async function Home({
         </div>
       ) : // Don't show raw text to real users — just render nothing
       null}
-
+      <Features />
       <IcosDeviceShowcase />
       <ZYNProductsShowcase />
       <LiquorShowcase />

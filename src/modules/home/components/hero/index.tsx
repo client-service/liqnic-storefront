@@ -19,7 +19,7 @@ const heroData = [
     title: "ZYN Nicotine Pouches. Fresh, Discreet, Powerful.",
     description:
       "Explore ZYN in multiple flavors and strengths — a modern, smoke-free nicotine experience that fits your lifestyle.",
-    primaryButton: "Shop ZYN Citrus",
+    primaryButton: "Shop ZYN Coffee",
     primaryLink: "/categories/nicotine-pouch",
     secondaryButton: "Shop ZYN Cool Mint",
     secondaryLink: "/categories/nicotine-pouch",
@@ -30,9 +30,9 @@ const heroData = [
     description:
       "From Moët Hennessy to Don Angel, discover rare whiskies, timeless cognacs, fine champagnes, and limited-edition collections — curated for every occasion.",
     primaryButton: "Shop Cognac",
-    primaryLink: "/categories/liquor",
+    primaryLink: "/categories/cognac",
     secondaryButton: "Shop Whiskies",
-    secondaryLink: "/categories/liquor",
+    secondaryLink: "/categories/whiskey",
   },
 ]
 
@@ -106,7 +106,7 @@ const Hero = () => {
       onTouchEnd={handleTouchEnd}
       aria-label="Hero carousel"
     >
-      <div className="relative h-[70vh] lg:h-[85vh] w-full overflow-hidden">
+      <div className="relative h-[85vh] lg:h-[85vh] w-full overflow-hidden">
         {/* ── Images: only render current + adjacent for perf ── */}
         {heroData.map((hero, index) => {
           // Only mount images that are current, previous, or next — skip the rest
@@ -126,34 +126,32 @@ const Hero = () => {
               aria-hidden={!isVisible}
             >
               {/* Desktop */}
-              <div className="hidden md:block relative w-full h-full">
+              <div className="hidden md:block relative w-full h-full ">
                 <Image
                   src={hero.image || "/placeholder.svg"}
                   alt={hero.title}
                   fill
                   priority={index === 0}
-                  // lazy-load non-priority slides
                   loading={index === 0 ? "eager" : "lazy"}
-                  quality={85} // 85 is visually identical, ~20% smaller
+                  quality={100}
                   className="object-cover object-center"
                   sizes="100vw"
                 />
               </div>
 
-              {/* Mobile — use fill instead of fixed 1000×1000 */}
-              <div className="md:hidden relative w-full h-full">
+              {/* MOBILE */}
+              <div className="md:hidden absolute inset-0 flex items-end w-full h-full">
                 <Image
                   src={hero.image || "/placeholder.svg"}
                   alt={hero.title}
-                  fill
                   priority={index === 0}
                   loading={index === 0 ? "eager" : "lazy"}
-                  quality={75} // lower quality on small screens
-                  className="object-cover object-right"
+                  quality={100}
+                  className=" w-auto h-80 object-cover object-right-bottom"
+                  width={1000}
+                  height={800}
                   sizes="100vw"
                 />
-                {/* Dark overlay so text is always readable on mobile */}
-                <div className="absolute inset-0 bg-black/50" />
               </div>
             </div>
           )
@@ -166,14 +164,14 @@ const Hero = () => {
               {/* Title — CSS animation via key change, no JS re-render needed */}
               <h2
                 key={`title-${currentHero}`}
-                className="text-black md:text-black text-white text-3xl sm:text-4xl lg:text-5xl xl:text-[70px] leading-tight tracking-tight lg:tracking-[-1.13px] font-manrope mb-4 sm:mb-6 lg:mb-8 animate-in slide-in-from-left-8 fade-in duration-700"
+                className=" text-black  text-3xl sm:text-4xl lg:text-5xl xl:text-[70px] leading-tight tracking-tight lg:tracking-[-1.13px] font-manrope mb-4 sm:mb-6 lg:mb-8 animate-in slide-in-from-left-8 fade-in duration-700"
               >
                 {current.title}
               </h2>
 
               <p
                 key={`desc-${currentHero}`}
-                className="text-black md:text-black text-white/90 text-base sm:text-lg lg:text-[18px] leading-relaxed lg:leading-[150%] font-manrope mb-6 sm:mb-8 lg:mb-12 max-w-[663px] animate-in slide-in-from-left-8 fade-in duration-700 delay-150"
+                className=" text-black  text-base sm:text-lg lg:text-[18px] leading-relaxed lg:leading-[150%] font-manrope mb-6 sm:mb-8 lg:mb-12 max-w-[663px] animate-in slide-in-from-left-8 fade-in duration-700 delay-150"
               >
                 {current.description}
               </p>
@@ -191,8 +189,8 @@ const Hero = () => {
                 </Link>
 
                 <Link href={current.secondaryLink} passHref>
-                  <button className="w-full sm:w-auto flex py-3 sm:py-[15px] px-6 sm:px-[10px] justify-center items-center gap-[10px] rounded-[5px] border border-[#838383] md:border-[#838383] border-white/60 bg-transparent hover:bg-black/5 md:hover:bg-black/5 hover:bg-white/10 transition-colors min-w-[201px]">
-                    <span className="text-black md:text-black text-white text-lg sm:text-[18px] leading-[150%] font-manrope">
+                  <button className="w-full sm:w-auto flex py-3 sm:py-[15px] px-6 sm:px-[10px] justify-center items-center gap-[10px] rounded-[5px] border border-[#838383] bg-white/80 hover:bg-gray-200/30 transition-colors min-w-[201px]">
+                    <span className="text-black text-lg sm:text-[18px] leading-[150%] font-manrope">
                       {current.secondaryButton}
                     </span>
                   </button>
