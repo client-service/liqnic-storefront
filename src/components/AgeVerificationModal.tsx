@@ -39,8 +39,8 @@ export default function AgeVerificationModal({
   const [denied, setDenied] = useState(false)
 
   const handleYes = () => {
-    localStorage.setItem("ageVerified", "true")
-    localStorage.setItem("verificationDate", new Date().toISOString())
+    sessionStorage.setItem("ageVerified", "true")
+    sessionStorage.setItem("verificationDate", new Date().toISOString())
     onVerificationComplete()
   }
 

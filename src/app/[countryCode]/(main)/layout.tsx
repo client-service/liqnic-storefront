@@ -29,7 +29,7 @@ export default async function PageLayout(props: { children: React.ReactNode }) {
   }
 
   return (
-    <AgeVerificationWrapper>
+    <>
       <PromoBanner />
       <Navbar />
       <main className="min-h-screen overflow-hidden">{props.children}</main>
@@ -55,6 +55,6 @@ export default async function PageLayout(props: { children: React.ReactNode }) {
         draggable
         theme="light"
       />
-    </AgeVerificationWrapper>
+    </>
   )
 }

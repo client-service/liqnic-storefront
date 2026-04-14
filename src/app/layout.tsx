@@ -2,6 +2,7 @@ import { getBaseURL } from "@lib/util/env"
 import { Metadata } from "next"
 import "styles/globals.css"
 import { Manrope } from "next/font/google"
+import AgeVerificationWrapper from "components/AgeVerificationWrapper"
 
 const manrope = Manrope({
   subsets: ["latin"],
@@ -74,7 +75,9 @@ export default function RootLayout(props: { children: React.ReactNode }) {
   return (
     <html lang="en" data-mode="light" className={manrope.variable}>
       <body className="">
-        <div className="relative">{props.children}</div>
+        <AgeVerificationWrapper>
+          <div className="relative">{props.children}</div>
+        </AgeVerificationWrapper>
       </body>
     </html>
   )
