@@ -5,6 +5,9 @@ ENV NODE_ENV=development
 # Create directory named app to hold the application code inside the image
 WORKDIR /app
 
+# Sharp utility
+RUN apk add --no-cache libc6-compat
+
 # Add package.json and package-lock.json
 COPY package*.json /tmp/
 
