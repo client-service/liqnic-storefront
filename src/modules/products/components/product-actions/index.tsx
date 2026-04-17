@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useMemo, useRef } from "react"
+import { useState, useEffect, useMemo, useRef, useTransition } from "react"
 import { addToCart } from "@lib/data/cart"
 import { useIntersection } from "@lib/hooks/use-in-view"
 import { HttpTypes } from "@medusajs/types"
@@ -138,6 +138,9 @@ export default function ProductActions({
   const [isAdding, setIsAdding] = useState(false)
   const [quantity, setQuantity] = useState(1)
 
+  // ADD useTransition
+  const [isPending, startTransition] = useTransition()
+
   const countryCode = useParams().countryCode as string
   const actionsRef = useRef<HTMLDivElement>(null)
   const inView = useIntersection(actionsRef, "0px")
@@ -216,17 +219,42 @@ export default function ProductActions({
     )
   }
 
-  const handleAddToCart = async () => {
+  const handleAddToCart = () => { // Note: Removed async
     if (!selectedVariant?.id) return
     setIsAdding(true)
-    try {
-      await addToCart({ variantId: selectedVariant.id, quantity, countryCode })
-      showSuccessToast()
-    } catch (err: any) {
-      showErrorToast(err?.message ?? "Failed to add to cart. Please try again.")
-    } finally {
-      setIsAdding(false)
-    }
+    
+    // OPTIMISTIC UI: Show success toast immediately
+    showSuccessToast()
+
+    // NEW: Beam the quantity directly up to the Navbar Cart Badge instantly
+    window.dispatchEvent(
+      new CustomEvent("optimistic-cart-update", { detail: quantity })
+    );
+
+    // 1. FIRE URGENT UI UPDATES IMMEDIATELY
+    showSuccessToast()
+
+    // 2. BROADCAST INSTANTLY to the Navbar
+    window.dispatchEvent(
+      new CustomEvent("optimistic-cart-update", { detail: quantity })
+    )
+
+    // 3. WRAP THE SLOW SERVER ACTION IN startTransition
+    startTransition(async () => {
+      try {
+        await addToCart({ variantId: selectedVariant.id, quantity, countryCode })
+        // Server action finishes, Next.js refreshes the UI in the background
+      } catch (err: any) {
+        // If the server fails, undo the optimistic UI
+        toast.dismiss(successToastId.current as Id)
+        showErrorToast(err?.message ?? "Failed to add to cart. Please try again.")
+        window.dispatchEvent(
+          new CustomEvent("optimistic-cart-update", { detail: -quantity })
+        )
+      } finally {
+        setIsAdding(false)
+      }
+    })
   }
 
   const incrementQuantity = () =>
@@ -247,7 +275,7 @@ export default function ProductActions({
               }
               title={option.title ?? ""}
               data-testid="product-options"
-              disabled={!!disabled || isAdding}
+              disabled={!!disabled || isAdding || isPending}
             />
           ))}
           <Divider />
@@ -260,7 +288,7 @@ export default function ProductActions({
       <div className="flex items-center gap-2 mt-2">
         <Button
           onClick={decrementQuantity}
-          disabled={quantity <= 1 || !!disabled || isAdding}
+          disabled={quantity <= 1 || !!disabled || isAdding || isPending}
           variant="secondary"
         >
           -
@@ -268,7 +296,7 @@ export default function ProductActions({
         <span className="w-8 text-center">{quantity}</span>
         <Button
           onClick={incrementQuantity}
-          disabled={quantity >= maxQuantity || !!disabled || isAdding}
+          disabled={quantity >= maxQuantity || !!disabled || isAdding || isPending}
           variant="secondary"
         >
           +
@@ -281,7 +309,8 @@ export default function ProductActions({
           !inStock ||
           !selectedVariant ||
           !!disabled ||
-          isAdding ||
+          isAdding || 
+          isPending ||
           !isValidVariant
         }
         variant="primary"
@@ -307,7 +336,7 @@ export default function ProductActions({
         handleAddToCart={handleAddToCart}
         isAdding={isAdding}
         show={!inView}
-        optionsDisabled={!!disabled || isAdding}
+        optionsDisabled={!!disabled || isAdding || isPending}
       />
     </div>
   )

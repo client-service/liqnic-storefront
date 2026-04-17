@@ -82,29 +82,49 @@ const DeleteButton = ({
   label,
   children,
   className,
+  onOptimisticDelete, // <-- ADDED PROP
 }: {
   id: string
-  label?: string // optional item name shown in the toast
+  label?: string
   children?: React.ReactNode
   className?: string
+  onOptimisticDelete?: () => void // <-- ADDED PROP
 }) => {
   const [isDeleting, setIsDeleting] = useState(false)
 
-  const handleDelete = async () => {
+  const handleDelete = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    // Prevent default/propagation to stop any Table Row clicks from interfering
+    e.preventDefault()
+    e.stopPropagation()
+    
+    if (isDeleting) return // Prevent double clicks
+    
     setIsDeleting(true)
+
+    // Trigger the optimistic UI callback (tells parent to fade)
+    if (onOptimisticDelete) {
+      onOptimisticDelete()
+    }
+
     try {
-      await deleteLineItem(id)
+      // Optimistic UI: Fire toast BEFORE awaiting the backend
       toast.success(<DeleteSuccessToast name={label} />, {
         ...baseToastOpts,
         autoClose: 3000,
         progressStyle: { background: "#f43f5e" },
       })
+      
+      await deleteLineItem(id)
+      // We do NOT set isDeleting to false here. 
+      // The component will naturally unmount when Next.js revalidates the cart.
     } catch {
+      // Revert on failure
+      setIsDeleting(false)
       toast.error(
         <DeleteErrorToast
           onRetry={() => {
             toast.dismiss()
-            handleDelete()
+            handleDelete(e)
           }}
         />,
         {
@@ -113,7 +133,6 @@ const DeleteButton = ({
           progressStyle: { background: "#f43f5e" },
         }
       )
-      setIsDeleting(false)
     }
   }
 
@@ -125,9 +144,10 @@ const DeleteButton = ({
       )}
     >
       <button
-        className="flex gap-x-1 text-ui-fg-subtle hover:text-ui-fg-base cursor-pointer"
+        className="flex gap-x-1 text-ui-fg-subtle hover:text-ui-fg-base cursor-pointer z-10" // added z-10
         onClick={handleDelete}
         disabled={isDeleting}
+        type="button" // explicit type
       >
         {isDeleting ? (
           <Spinner className="animate-spin" />

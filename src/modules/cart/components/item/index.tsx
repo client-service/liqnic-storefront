@@ -11,7 +11,7 @@ import LineItemPrice from "@modules/common/components/line-item-price"
 import LineItemUnitPrice from "@modules/common/components/line-item-unit-price"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import Spinner from "@modules/common/icons/spinner"
-import { useState } from "react"
+import { useState, useRef } from "react"
 
 type ItemProps = {
   item: HttpTypes.StoreCartLineItem
@@ -22,29 +22,43 @@ type ItemProps = {
 const Item = ({ item, type = "full", currencyCode }: ItemProps) => {
   const [updating, setUpdating] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [isDeleting, setIsDeleting] = useState(false) // <-- ADDED STATE
+  const updateTimeout = useRef<NodeJS.Timeout | null>(null) // For debounce
 
   const changeQuantity = async (quantity: number) => {
     setError(null)
-    setUpdating(true)
+    setUpdating(true) // 💡 Instantly dims the row
 
-    await updateLineItem({
-      lineId: item.id,
-      quantity,
-    })
-      .catch((err) => {
-        setError(err.message)
+    // 💡 DEBOUNCE: Prevent rapid API calls if user clicks multiple times quickly
+    if (updateTimeout.current) clearTimeout(updateTimeout.current)
+
+    updateTimeout.current = setTimeout(async () => {
+      await updateLineItem({
+        lineId: item.id,
+        quantity,
       })
-      .finally(() => {
-        setUpdating(false)
-      })
+        .catch((err) => {
+          setError(err.message)
+        })
+        .finally(() => {
+          setUpdating(false)
+        })
+    }, 400) // Wait 400ms after last click before calling backend
   }
 
-  // TODO: Update this to grab the actual max inventory
   const maxQtyFromInventory = 10
   const maxQuantity = item.variant?.manage_inventory ? 10 : maxQtyFromInventory
 
   return (
-    <Table.Row className="w-full relative" data-testid="product-row">
+    <Table.Row 
+      // 💡 OPTIMISTIC UI: Instantly fade out on delete, dim on quantity update
+      className={clx("w-full relative transition-all duration-300", {
+        "opacity-0 pointer-events-none scale-95": isDeleting,
+        "opacity-50 pointer-events-none": updating && !isDeleting,
+      })} 
+      data-testid="product-row"
+    >
+      {/* ... KEEP YOUR EXISTING TABLE CELLS HERE ... */}
       <Table.Cell className="!pl-0 p-8 md:p-12 w-24">
         <LocalizedClientLink
           href={`/products/${item.product_handle}`}
@@ -70,12 +84,7 @@ const Item = ({ item, type = "full", currencyCode }: ItemProps) => {
         </Text>
         <LineItemOptions variant={item.variant} data-testid="product-variant" />
 
-        {/* Quantity Controls */}
         <div className="flex items-center gap-4 mt-4 lg:mt-8">
-          {/* <span className="text-gray-600 text-xs sm:text-sm font-medium">
-            Quantity
-          </span> */}
-
           {type === "full" && (
             <Table.Cell>
               <div className="flex gap-2 items-center w-28">
@@ -87,7 +96,6 @@ const Item = ({ item, type = "full", currencyCode }: ItemProps) => {
                   className="w-14 h-10 p-4"
                   data-testid="product-select-button"
                 >
-                  {/* TODO: Update this with the v2 way of managing inventory */}
                   {Array.from(
                     {
                       length: Math.min(maxQuantity, 10),
@@ -98,10 +106,7 @@ const Item = ({ item, type = "full", currencyCode }: ItemProps) => {
                       </option>
                     )
                   )}
-
-                  <option value={1} key={1}>
-                    1
-                  </option>
+                  <option value={1} key={1}>1</option>
                 </CartItemSelect>
                 {updating && <Spinner />}
               </div>
@@ -144,12 +149,22 @@ const Item = ({ item, type = "full", currencyCode }: ItemProps) => {
           />
         </span>
       </Table.Cell>
+      {/* ... END EXISTING TABLE CELLS ... */}
 
       <div className="absolute inset-0 w-full h-full pointer-events-none flex items-end justify-end pb-8">
         <DeleteButton
           id={item.id}
           className="pointer-events-auto"
           data-testid="product-delete-button"
+          onOptimisticDelete={() => {
+            setIsDeleting(true);
+            // 🚀 Tell the Navbar Cart Dropdown to drop its count instantly
+            window.dispatchEvent(
+              new CustomEvent("optimistic-cart-update", {
+                detail: -item.quantity,
+              })
+            );
+          }} // <-- ADDED PROP
         />
       </div>
     </Table.Row>

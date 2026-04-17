@@ -24,3 +24,21 @@ export const convertToLocale = ({
       }).format(amount)
     : amount.toString()
 }
+
+// ADDED: formatAmount function required by the Cart Dropdown
+type FormatAmountParams = {
+  amount: number
+  currencyCode: string
+  locale?: string
+}
+
+export const formatAmount = ({
+  amount,
+  currencyCode,
+  locale = "en-US",
+}: FormatAmountParams) => {
+  return new Intl.NumberFormat(locale, {
+    style: "currency",
+    currency: currencyCode,
+  }).format(amount)
+}
