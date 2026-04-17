@@ -16,7 +16,7 @@ const optionsAsKeymap = (opts: any): Record<string, string> =>
     return acc
   }, {}) ?? {}
 
-// ─── Toast content components ────────────────────────────────────────────────
+// ─── Toast content components ─────────────────────────────────────────────────
 
 function CartSuccessToast({
   title,
@@ -49,7 +49,6 @@ function CartErrorToast({
 }) {
   return (
     <div className="flex items-start gap-3 min-w-0">
-      {/* X icon */}
       <svg
         className="shrink-0 mt-0.5 text-rose-500"
         width="18"
@@ -99,8 +98,7 @@ const baseToastOpts = {
   draggable: true,
   closeButton: false,
   style: baseToastStyle,
-  // Custom progress bar color is set via CSS injection below
-  progressStyle: { background: "#d1d5db" }, // overridden per type
+  progressStyle: { background: "#d1d5db" },
 }
 
 // ─── Component ────────────────────────────────────────────────────────────────
@@ -117,7 +115,6 @@ export default function ProductPreview({
   const [isAdding, setIsAdding] = useState(false)
 
   const isAddingRef = useRef(false)
-  // Track the active success toast ID so we can update-in-place instead of stacking
   const successToastId = useRef<Id | null>(null)
 
   const countryCode = useParams().countryCode as string
@@ -164,11 +161,9 @@ export default function ProductPreview({
     const opts = {
       ...baseToastOpts,
       autoClose: 3000,
-      progressStyle: { background: "#10b981" }, // emerald
+      progressStyle: { background: "#10b981" },
     }
-
     if (successToastId.current && toast.isActive(successToastId.current)) {
-      // Update existing toast (resets its timer) instead of stacking
       toast.update(successToastId.current, { render: content, ...opts })
     } else {
       successToastId.current = toast.success(content, opts)
@@ -187,17 +182,15 @@ export default function ProductPreview({
       {
         ...baseToastOpts,
         autoClose: 6000,
-        progressStyle: { background: "#f43f5e" }, // rose
+        progressStyle: { background: "#f43f5e" },
       }
     )
   }
 
   const handleAddToCart = async () => {
     if (!selectedVariant?.id || isAddingRef.current) return
-
     isAddingRef.current = true
     setIsAdding(true)
-
     try {
       await addToCart({ variantId: selectedVariant.id, quantity, countryCode })
       showSuccessToast()
@@ -212,14 +205,12 @@ export default function ProductPreview({
   const { cheapestPrice } = getProductPrice({ product })
 
   return (
-    <div className="group w-full h-full flex flex-col rounded-lg bg-[#F9F9F9] border border-gray-100">
+    <LocalizedClientLink
+      href={`/products/${product.handle}`}
+      className="group w-full h-full flex flex-col rounded-lg bg-[#F9F9F9] border border-gray-100 hover:border-gray-200 transition-colors cursor-pointer"
+    >
       {/* Image */}
-      <LocalizedClientLink
-        href={`/products/${product.handle}`}
-        tabIndex={-1}
-        aria-hidden
-        className="p-2 lg:p-4"
-      >
+      <div className="p-2 lg:p-4">
         <div className="relative w-full h-36 xs:h-44 sm:h-52 lg:h-56 rounded-lg overflow-hidden">
           {thumbnail ? (
             <Image
@@ -235,10 +226,11 @@ export default function ProductPreview({
             </div>
           )}
         </div>
-      </LocalizedClientLink>
+      </div>
 
       {/* Info + actions */}
       <div className="flex flex-col flex-grow p-2.5 sm:p-3.5 gap-2">
+        {/* Title */}
         <h2 className="text-xs sm:text-sm font-semibold leading-snug line-clamp-2 text-gray-900">
           {product.title}
         </h2>
@@ -255,59 +247,53 @@ export default function ProductPreview({
           </p>
         )}
 
-        {/* Quantity stepper */}
-        <div className="flex items-center justify-between mt-1">
-          <span className="text-xs text-gray-500">Qty</span>
-          <div className="flex items-center gap-1.5">
+        {/* Stepper + Add to cart
+            mobile: two stacked rows
+            sm+:    single row side by side */}
+        <div
+          className="flex flex-col sm:flex-row items-stretch sm:items-center gap-1.5 sm:gap-2 mt-1"
+          onClick={(e) => e.preventDefault()}
+        >
+          {/* Stepper */}
+          <div className="flex items-center rounded-md border border-gray-200 bg-white overflow-hidden w-full sm:w-auto shrink-0">
             <button
               onClick={() => setQuantity((q) => Math.max(q - 1, 1))}
               disabled={!selectedVariant || quantity <= 1}
               aria-label="Decrease quantity"
-              className="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-md border border-gray-200 bg-white text-gray-700 font-medium text-sm disabled:opacity-40 disabled:cursor-not-allowed active:scale-95 transition"
+              className="flex-1 sm:flex-none sm:w-8 h-8 sm:h-10 flex items-center justify-center text-gray-600 font-medium text-sm disabled:opacity-40 disabled:cursor-not-allowed active:scale-95 transition hover:bg-gray-50"
             >
               −
             </button>
-            <span className="w-6 text-center text-sm font-medium tabular-nums">
+            <span className="w-10 sm:w-7 text-center text-sm font-medium tabular-nums border-x border-gray-200">
               {quantity}
             </span>
             <button
               onClick={() => setQuantity((q) => Math.min(q + 1, maxQuantity))}
               disabled={!selectedVariant || quantity >= maxQuantity}
               aria-label="Increase quantity"
-              className="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-md border border-gray-200 bg-white text-gray-700 font-medium text-sm disabled:opacity-40 disabled:cursor-not-allowed active:scale-95 transition"
+              className="flex-1 sm:flex-none sm:w-8 h-8 sm:h-10 flex items-center justify-center text-gray-600 font-medium text-sm disabled:opacity-40 disabled:cursor-not-allowed active:scale-95 transition hover:bg-gray-50"
             >
               +
             </button>
           </div>
-        </div>
 
-        {/* CTA buttons */}
-        <div className="flex flex-col sm:flex-row gap-1.5 sm:gap-2 mt-2">
+          {/* Add to cart — full width on mobile, flex-1 on sm+ */}
           <button
             onClick={handleAddToCart}
             disabled={!selectedVariant || !inStock || isAdding}
             aria-label={!inStock ? "Out of stock" : "Add to cart"}
-            className="w-full sm:flex-1 h-9 sm:h-10 flex items-center justify-center gap-1.5 rounded-md bg-black text-white text-xs sm:text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98] transition"
+            className="w-full sm:flex-1 h-8 sm:h-10 flex items-center justify-center gap-1.5 rounded-md bg-black text-white text-xs sm:text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98] transition"
           >
             {isAdding ? (
-              <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+              <span className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
             ) : !inStock ? (
               "Out of stock"
             ) : (
               "Add to cart"
             )}
           </button>
-
-          <LocalizedClientLink
-            href={`/products/${product.handle}`}
-            className="w-full sm:flex-1"
-          >
-            <button className="w-full h-9 sm:h-10 flex items-center justify-center rounded-md border border-gray-200 bg-white text-xs sm:text-sm font-medium text-gray-700 hover:bg-gray-50 active:scale-[0.98] transition">
-              View details
-            </button>
-          </LocalizedClientLink>
         </div>
       </div>
-    </div>
+    </LocalizedClientLink>
   )
 }
