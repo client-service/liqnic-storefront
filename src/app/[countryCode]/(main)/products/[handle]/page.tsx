@@ -1,54 +1,57 @@
 import { listProducts } from "@lib/data/products"
-import { getRegion, listRegions } from "@lib/data/regions"
+import { getRegion } from "@lib/data/regions"
 import ProductTemplate from "@modules/products/templates"
 import { Metadata } from "next"
+
+export const revalidate = 60
+export const dynamicParams = true
 
 type Props = {
   params: Promise<{ countryCode: string; handle: string }>
 }
 
-export async function generateStaticParams() {
-  try {
-    const countryCodes = await listRegions().then((regions) =>
-      regions
-        ?.map((r) => r.countries?.map((c) => c.iso_2))
-        .flat()
-        .filter(Boolean)
-    )
+// export async function generateStaticParams() {
+//   try {
+//     const countryCodes = await listRegions().then((regions) =>
+//       regions
+//         ?.map((r) => r.countries?.map((c) => c.iso_2))
+//         .flat()
+//         .filter(Boolean)
+//     )
 
-    if (!countryCodes) return []
+//     if (!countryCodes) return []
 
-    const promises = countryCodes.map(async (country) => {
-      try {
-        const { response } = await listProducts({
-          countryCode: country,
-          queryParams: { limit: 100, fields: "handle" },
-        })
-        return { country, products: response.products || [] }
-      } catch (err: any) {
-        console.warn(`Could not fetch products for ${country}:`, err.message)
-        return { country, products: [] }
-      }
-    })
+//     const promises = countryCodes.map(async (country) => {
+//       try {
+//         const { response } = await listProducts({
+//           countryCode: country,
+//           queryParams: { limit: 100, fields: "handle" },
+//         })
+//         return { country, products: response.products || [] }
+//       } catch (err: any) {
+//         console.warn(`Could not fetch products for ${country}:`, err.message)
+//         return { country, products: [] }
+//       }
+//     })
 
-    const countryProducts = await Promise.all(promises)
+//     const countryProducts = await Promise.all(promises)
 
-    return countryProducts
-      .flatMap((countryData) =>
-        countryData.products.map((product) => ({
-          countryCode: countryData.country,
-          handle: product.handle,
-        }))
-      )
-      .filter((param) => param.handle)
-  } catch (err: any) {
-    console.warn(
-      "Failed to generate static paths for product pages:",
-      err.message
-    )
-    return []
-  }
-}
+//     return countryProducts
+//       .flatMap((countryData) =>
+//         countryData.products.map((product) => ({
+//           countryCode: countryData.country,
+//           handle: product.handle,
+//         }))
+//       )
+//       .filter((param) => param.handle)
+//   } catch (err: any) {
+//     console.warn(
+//       "Failed to generate static paths for product pages:",
+//       err.message
+//     )
+//     return []
+//   }
+// }
 
 export async function generateMetadata(props: Props): Promise<Metadata> {
   const params = await props.params
