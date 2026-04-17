@@ -25,10 +25,6 @@ export default async function Cart({
     return notFound()
   })
 
-  console.log("cart region →", cart?.region)
-  console.log("cart tax lines →", cart?.items?.[0]?.tax_lines)
-  console.log("shipping tax →", cart?.shipping_methods?.[0])
-
   const customer = await retrieveCustomer()
 
   return <CartTemplate cart={cart} customer={customer} region={region} />

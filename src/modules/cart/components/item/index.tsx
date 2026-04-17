@@ -43,8 +43,6 @@ const Item = ({ item, type = "full", currencyCode }: ItemProps) => {
   const maxQtyFromInventory = 10
   const maxQuantity = item.variant?.manage_inventory ? 10 : maxQtyFromInventory
 
-  console.log("this is image url", item?.thumbnail)
-
   return (
     <Table.Row className="w-full relative" data-testid="product-row">
       <Table.Cell className="!pl-0 p-8 md:p-12 w-24">

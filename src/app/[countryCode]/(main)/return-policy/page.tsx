@@ -6,15 +6,16 @@ export default function ReturnPolicy() {
           Return Policy — Liqnic
         </p>
         <p className="text-xs text-gray-400">
-          Operated by Khirkhirya Enterprises Pvt. Ltd. · Applies to all
-          purchases made on this site
+          Operated by Khirkhirya Enterprises Pvt. Ltd. · Applicable to all
+          orders placed on this platform
         </p>
       </div>
 
       <p className="text-xs leading-relaxed text-gray-600 mb-6">
-        This policy outlines the conditions under which returns, replacements,
-        and cancellations are accepted for purchases made on Liqnic, operated by
-        Khirkhirya Enterprises Pvt. Ltd.
+        The following terms govern the conditions under which returns,
+        replacements, and order cancellations may be initiated for products
+        purchased through Liqnic, a platform operated by Khirkhirya Enterprises
+        Pvt. Ltd.
       </p>
 
       {[
@@ -23,48 +24,57 @@ export default function ReturnPolicy() {
           content: (
             <>
               <p>
-                A <strong>return</strong> is defined as the action of giving
-                back an item purchased from Liqnic. Returns may be accepted
-                under the following circumstances:
-              </p>
-              <ul className="list-disc ml-4 mt-1 space-y-1">
-                <li>The item received was defective.</li>
-                <li>
-                  The item was damaged during the shipping or delivery process.
-                </li>
-                <li>The wrong item was delivered.</li>
-                <li>An item was missing from the order.</li>
-              </ul>
-              <p className="mt-2">
-                <strong>Please note:</strong>
+                A <strong>return</strong> refers to sending back a product that
+                was purchased on Liqnic. A return request may be considered
+                valid in the following situations:
               </p>
               <ul className="list-disc ml-4 mt-1 space-y-1">
                 <li>
-                  Khirkhirya Enterprises Pvt. Ltd. may accept returns at its
-                  sole discretion, irrespective of this policy.
+                  The item delivered was found to be defective or
+                  non-functional.
                 </li>
                 <li>
-                  If a return request is declined, the Buyer may file a dispute
-                  under the Buyer Protection Program.
+                  The product sustained damage during transit or delivery.
                 </li>
                 <li>
-                  Buyers are encouraged to review the listing carefully before
-                  purchasing. Orders placed for the wrong item will not be
-                  eligible for return or refund.
+                  An incorrect product was sent in place of the ordered item.
                 </li>
                 <li>
-                  Return requests must be raised within{" "}
-                  <strong>48 hours</strong> of payment realization.
-                </li>
-                <li>
-                  On certain promotional or special sales, separate policies may
-                  apply as specified by Khirkhirya Enterprises Pvt. Ltd.
+                  One or more items were missing from the delivered order.
                 </li>
               </ul>
               <p className="mt-2">
-                If a return is accepted, the Buyer must return the product in
-                its original condition. The refund will then be credited to the
-                Buyer's account.
+                <strong>Important information:</strong>
+              </p>
+              <ul className="list-disc ml-4 mt-1 space-y-1">
+                <li>
+                  Khirkhirya Enterprises Pvt. Ltd. reserves the right to approve
+                  or decline return requests at its own discretion, regardless
+                  of the above conditions.
+                </li>
+                <li>
+                  If a return request is not approved, the Buyer may escalate
+                  the matter through the Buyer Protection Program.
+                </li>
+                <li>
+                  Buyers are advised to verify product details thoroughly before
+                  completing a purchase. Returns will not be entertained for
+                  items ordered by mistake.
+                </li>
+                <li>
+                  All return requests must be submitted within{" "}
+                  <strong>48 hours</strong> of payment confirmation.
+                </li>
+                <li>
+                  Special or promotional sales may carry their own return terms
+                  as communicated by Khirkhirya Enterprises Pvt. Ltd. at the
+                  time of purchase.
+                </li>
+              </ul>
+              <p className="mt-2">
+                When a return is approved, the Buyer must send back the product
+                in its original, unused condition. Upon receipt, the refund
+                amount will be credited to the Buyer's account.
               </p>
             </>
           ),
@@ -74,59 +84,61 @@ export default function ReturnPolicy() {
           content: (
             <>
               <p>
-                A <strong>replacement</strong> is the process of exchanging a
-                delivered item for another. A Buyer may request a replacement if
-                the item was damaged in shipping, defective, incorrect, or if
-                items were missing.
+                A <strong>replacement</strong> involves substituting a delivered
+                item with a new one. Buyers may raise a replacement request in
+                cases where the product arrived damaged, was defective, did not
+                match the ordered item, or if items were missing from the
+                shipment.
               </p>
               <p className="mt-2">
-                <strong>Please note:</strong>
+                <strong>Important information:</strong>
               </p>
               <ul className="list-disc ml-4 mt-1 space-y-1">
                 <li>
-                  Khirkhirya Enterprises Pvt. Ltd. may accept replacements at
-                  its sole discretion, irrespective of this policy.
+                  Khirkhirya Enterprises Pvt. Ltd. may approve or reject
+                  replacement requests at its sole discretion, independent of
+                  this policy.
                 </li>
                 <li>
-                  If a replacement request is declined, the Buyer may file a
-                  dispute under the Buyer Protection Program.
+                  Buyers whose replacement requests are declined may escalate
+                  via the Buyer Protection Program.
                 </li>
                 <li>
-                  Replacement requests must be raised within{" "}
-                  <strong>48 hours</strong> of delivery.
+                  Replacement requests must be submitted within{" "}
+                  <strong>48 hours</strong> of receiving the delivery.
                 </li>
               </ul>
               <p className="mt-2">
-                Once a replacement request is raised, the following process
-                applies:
+                Upon raising a replacement request, the following steps will be
+                followed:
               </p>
               <ol className="list-decimal ml-4 mt-1 space-y-1">
                 <li>
-                  The Buyer will be asked to provide a reason for the return
-                  (e.g. damaged in shipping, defective item, missing item, wrong
-                  item sent, price discrepancy).
+                  The Buyer will be asked to specify the reason for the request
+                  (e.g. transit damage, defective product, missing item,
+                  incorrect item, pricing error).
                 </li>
                 <li>
-                  Khirkhirya Enterprises Pvt. Ltd. will review the request and
-                  provide either approval or rejection.
+                  Khirkhirya Enterprises Pvt. Ltd. will evaluate the request and
+                  communicate its decision.
                 </li>
                 <li>
-                  If approved, the Buyer must return the original product before
-                  the replacement is dispatched.
+                  If approved, the Buyer must return the original item before
+                  the replacement is shipped out.
                 </li>
                 <li>
-                  If rejected, the Buyer may raise a dispute by writing to{" "}
+                  If declined, the Buyer may escalate by reaching out to{" "}
                   <strong>info@liqnic.com</strong>.
                 </li>
                 <li>
-                  The original invoice must be presented at the time of return
-                  or replacement.
+                  The original purchase invoice must be presented at the time of
+                  returning the item or processing the replacement.
                 </li>
               </ol>
               <p className="mt-2">
-                If the requested replacement product is unavailable, Khirkhirya
-                Enterprises Pvt. Ltd. may offer a refund in lieu of replacement,
-                which the Buyer shall be obligated to accept.
+                In the event that the requested replacement item is out of
+                stock, Khirkhirya Enterprises Pvt. Ltd. may issue a refund as an
+                alternative, which the Buyer shall be required to accept.
               </p>
             </>
           ),
@@ -135,9 +147,10 @@ export default function ReturnPolicy() {
           title: "3. Cancellation",
           content: (
             <p>
-              If you wish to cancel an order, please contact our customer care
-              at least <strong>1 hour before</strong> the scheduled delivery
-              time.
+              To cancel a placed order, please reach out to our customer support
+              team no later than <strong>1 hour before</strong> the scheduled
+              delivery time. Cancellation requests submitted after this window
+              may not be accommodated.
             </p>
           ),
         },
@@ -154,9 +167,9 @@ export default function ReturnPolicy() {
 
       <div className="border-t border-gray-200 mt-6 pt-4">
         <p className="text-xs text-gray-400">
-          For return or replacement queries, contact us within the stipulated
-          timeframe. · Khirkhirya Enterprises Pvt. Ltd. reserves all rights
-          under applicable law.
+          For any return or replacement concerns, please reach out within the
+          applicable timeframe. · Khirkhirya Enterprises Pvt. Ltd. retains all
+          rights as permitted under applicable law.
         </p>
       </div>
     </div>

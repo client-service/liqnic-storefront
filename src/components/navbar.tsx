@@ -33,12 +33,15 @@ export default async function Navbar() {
           {MENU_ITEMS.map((item) =>
             item.dropdown ? (
               <div key={item.label} className="relative group">
-                <div className="flex items-center gap-[5px] cursor-pointer">
+                <Link
+                  href={`/categories/${item.href}` || "#"}
+                  className="flex items-center gap-[5px]"
+                >
                   <span className="text-black text-[14.4px] font-medium leading-[150%] group-hover:text-[#C5A163] transition-colors font-manrope">
                     {item.label}
                   </span>
                   <ChevronDown className="w-4 h-4 text-black group-hover:text-[#C5A163] transition-colors" />
-                </div>
+                </Link>
                 <div className="absolute top-full left-0 mt-2 w-40 lg:w-60 bg-white border rounded-lg border-gray-200 shadow-lg opacity-0 invisible group-hover:visible group-hover:opacity-100 transition-all z-50">
                   {item.children?.map((child) => (
                     <Link

@@ -6,8 +6,44 @@ import { useState, useEffect } from "react"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import CountrySelect from "../country-select"
 import { HttpTypes } from "@medusajs/types"
-import { LuMenu, LuUser } from "react-icons/lu"
+import {
+  LuMenu,
+  LuUser,
+  LuShoppingBag,
+  LuLayoutGrid,
+  LuInfo,
+  LuMail,
+  LuTag,
+  LuSparkles,
+} from "react-icons/lu"
 import type { MenuItem } from "@lib/menu"
+import { FaHome } from "react-icons/fa"
+
+// ── Map label → icon (extend as needed) ──────────────────────────────────────
+const ICON_MAP: Record<string, React.ReactNode> = {
+  home: <FaHome size={15} />,
+  shop: <LuShoppingBag size={15} />,
+  collections: <LuLayoutGrid size={15} />,
+  "new arrivals": <LuSparkles size={15} />,
+  sale: <LuTag size={15} />,
+  about: <LuInfo size={15} />,
+  contact: <LuMail size={15} />,
+}
+
+function NavIcon({ label }: { label: string }) {
+  const icon = ICON_MAP[label.toLowerCase()]
+  if (!icon) return null
+  return (
+    <span
+      className="
+      w-7 h-7 flex items-center justify-center flex-shrink-0
+      rounded-lg bg-gray-100 text-gray-500
+    "
+    >
+      {icon}
+    </span>
+  )
+}
 
 export default function SideMenu({
   regions,
@@ -20,7 +56,6 @@ export default function SideMenu({
   const [open, setOpen] = useState(false)
   const [openDropdown, setOpenDropdown] = useState<string | null>(null)
 
-  // Lock body scroll when open
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : ""
     return () => {
@@ -28,7 +63,6 @@ export default function SideMenu({
     }
   }, [open])
 
-  // Close on Escape
   useEffect(() => {
     if (!open) return
     const handler = (e: KeyboardEvent) => {
@@ -45,24 +79,20 @@ export default function SideMenu({
 
   return (
     <>
-      {/* ── Hamburger trigger ──────────────────────────────────────────── */}
+      {/* ── Hamburger ── */}
       <button
         onClick={() => setOpen(true)}
         data-testid="nav-menu-button"
         aria-label="Open menu"
-        className="
-          w-10 h-10 flex items-center justify-center
-          rounded-lg hover:bg-gray-100
-          transition-colors
-        "
+        className="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-gray-100 transition-colors"
       >
         <LuMenu size={20} />
       </button>
 
-      {/* ── Backdrop ──────────────────────────────────────────────────── */}
+      {/* ── Backdrop ── */}
       <div
         className={clx(
-          "fixed inset-0 bg-black/50 z-40 transition-opacity duration-300",
+          "fixed inset-0 bg-black/40 z-40 transition-opacity duration-300",
           open
             ? "opacity-100 pointer-events-auto"
             : "opacity-0 pointer-events-none"
@@ -71,74 +101,92 @@ export default function SideMenu({
         aria-hidden="true"
       />
 
-      {/* ── Drawer panel ──────────────────────────────────────────────── */}
+      {/* ── Drawer ── */}
       <div
         role="dialog"
         aria-modal="true"
         aria-label="Navigation menu"
         className={clx(
           "fixed top-0 right-0 h-full z-50",
-          "w-[85vw] sm:w-80",
+          "w-[85vw] sm:w-[320px]",
           "bg-white flex flex-col",
           "shadow-2xl",
           "transition-transform duration-300 ease-in-out",
           open ? "translate-x-0" : "translate-x-full"
         )}
       >
-        {/* Header */}
+        {/* ── Header: brand + close ── */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
-          <span className="text-base font-semibold text-gray-900">Menu</span>
+          <LocalizedClientLink
+            href="/"
+            onClick={close}
+            className="flex items-center gap-2.5"
+          >
+            {/* Brand mark — swap with your actual <Logo /> component if you have one */}
+            <div className="w-7 h-7 rounded-lg bg-gray-900 flex items-center justify-center flex-shrink-0">
+              <span className="text-white text-[11px] font-semibold tracking-tight">
+                L
+              </span>
+            </div>
+            <span className="text-sm font-semibold text-gray-900 tracking-tight">
+              Liqnic
+            </span>
+          </LocalizedClientLink>
+
           <button
             onClick={close}
             data-testid="close-menu-button"
             aria-label="Close menu"
-            className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors"
+            className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors text-gray-500"
           >
             <XMark />
           </button>
         </div>
 
-        {/* Nav links */}
-        <nav className="flex-1 overflow-y-auto px-4 py-4">
-          <ul className="flex flex-col gap-1">
-            {/* ── My Account — shown here on mobile since it's hidden in Navbar ── */}
+        {/* ── Nav ── */}
+        <nav className="flex-1 overflow-y-auto px-3 py-3">
+          {/* Account section */}
+          <p className="px-2 pt-1 pb-1.5 text-[10px] font-semibold tracking-widest text-gray-400 uppercase">
+            Account
+          </p>
+          <ul className="flex flex-col gap-0.5 mb-3">
             <li>
               <LocalizedClientLink
                 href="/account"
                 onClick={close}
-                className="
-                  flex items-center gap-3 px-3 py-3 rounded-lg
-                  text-sm font-medium text-gray-700
-                  hover:bg-gray-50 hover:text-gray-900
-                  transition-colors min-h-[44px]
-                "
+                className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors min-h-[44px]"
               >
-                <LuUser size={17} className="text-gray-400 flex-shrink-0" />
+                <span className="w-7 h-7 flex items-center justify-center flex-shrink-0 rounded-lg bg-gray-100 text-gray-500">
+                  <LuUser size={15} />
+                </span>
                 My Account
               </LocalizedClientLink>
             </li>
+          </ul>
 
-            <li className="my-1">
-              <div className="h-px bg-gray-100" />
-            </li>
+          <div className="h-px bg-gray-100 mx-2 mb-3" />
 
+          {/* Dynamic menu items */}
+          <p className="px-2 pb-1.5 text-[10px] font-semibold tracking-widest text-gray-400 uppercase">
+            Shop
+          </p>
+          <ul className="flex flex-col gap-0.5">
             {menuItems.map((item) => (
               <li key={item.label} className="w-full">
-                {item.href ? (
+                {/* ── Plain link ── */}
+                {item.href && !item.dropdown ? (
                   <LocalizedClientLink
-                    href={item.href}
+                    href=""
                     onClick={close}
-                    className="
-                      flex items-center px-3 py-3 rounded-lg
-                      text-sm font-medium text-gray-700
-                      hover:bg-gray-50 hover:text-gray-900
-                      transition-colors min-h-[44px]
-                    "
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors min-h-[44px]"
                   >
+                    <NavIcon label={item.label} />
                     {item.label}
                   </LocalizedClientLink>
                 ) : item.dropdown && item.children ? (
-                  <div className="flex flex-col">
+                  /* ── Parent: toggle row + inset submenu card ── */
+                  <div className="flex flex-col gap-0.5">
+                    {/* Toggle row */}
                     <button
                       type="button"
                       onClick={() =>
@@ -146,23 +194,37 @@ export default function SideMenu({
                           prev === item.label ? null : item.label
                         )
                       }
-                      className="
-                        flex justify-between items-center
-                        px-3 py-3 rounded-lg w-full text-left
-                        text-sm font-medium text-gray-700
-                        hover:bg-gray-50 transition-colors min-h-[44px]
-                      "
+                      aria-expanded={openDropdown === item.label}
+                      aria-label={`${
+                        openDropdown === item.label ? "Collapse" : "Expand"
+                      } ${item.label}`}
+                      className={clx(
+                        "flex items-center gap-3 w-full px-3 py-2.5 rounded-xl",
+                        "text-sm font-medium text-gray-700 min-h-[44px]",
+                        "hover:bg-gray-50 transition-colors",
+                        openDropdown === item.label &&
+                          "bg-gray-50 text-gray-900"
+                      )}
                     >
-                      <span>{item.label}</span>
+                      <NavIcon label={item.label} />
+                      <span className="flex-1 text-left">{item.label}</span>
+
+                      {/* Child count badge */}
+                      {item.children.length > 0 && (
+                        <span className="text-[10px] font-medium bg-gray-100 text-gray-400 rounded px-1.5 py-0.5 leading-none">
+                          {item.children.length}
+                        </span>
+                      )}
+
                       <ArrowRightMini
                         className={clx(
-                          "transition-transform duration-200 text-gray-400",
+                          "text-gray-400 transition-transform duration-200 flex-shrink-0",
                           openDropdown === item.label ? "rotate-90" : ""
                         )}
                       />
                     </button>
 
-                    {/* Dropdown children */}
+                    {/* Inset submenu card */}
                     <div
                       className={clx(
                         "overflow-hidden transition-all duration-200",
@@ -171,24 +233,62 @@ export default function SideMenu({
                           : "max-h-0 opacity-0"
                       )}
                     >
-                      <ul className="ml-4 flex flex-col gap-0.5 pb-1">
-                        {item.children.map((child) => (
-                          <li key={child.label}>
-                            <LocalizedClientLink
-                              href={child.href!}
-                              onClick={close}
-                              className="
-                                flex items-center px-3 py-2.5 rounded-lg
-                                text-sm text-gray-600
-                                hover:bg-gray-50 hover:text-gray-900
-                                transition-colors min-h-[44px]
-                              "
+                      <div className="mx-2 mb-1 rounded-xl overflow-hidden bg-gray-50 border border-gray-100">
+                        {/* "Show all [label]" — navigates to the parent category page */}
+                        {item.href && (
+                          <LocalizedClientLink
+                            href={`/categories/${item.href}`}
+                            onClick={close}
+                            className="
+                              flex items-center justify-between
+                              px-4 py-3 min-h-[44px]
+                              text-sm font-semibold text-gray-800
+                              hover:bg-gray-100 transition-colors
+                              border-b border-gray-100
+                            "
+                          >
+                            <span>Show all {item.label}</span>
+                            {/* → arrow distinguishes navigation from the › expand chevron */}
+                            <svg
+                              width="14"
+                              height="14"
+                              viewBox="0 0 14 14"
+                              fill="none"
+                              className="text-gray-400 flex-shrink-0"
                             >
-                              {child.label}
-                            </LocalizedClientLink>
-                          </li>
-                        ))}
-                      </ul>
+                              <path
+                                d="M2 7h10M8 3l4 4-4 4"
+                                stroke="currentColor"
+                                strokeWidth="1.5"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              />
+                            </svg>
+                          </LocalizedClientLink>
+                        )}
+
+                        {/* Subcategory items */}
+                        <ul>
+                          {item.children.map((child, i) => (
+                            <li key={child.label}>
+                              <LocalizedClientLink
+                                href={child.href!}
+                                onClick={close}
+                                className={clx(
+                                  "flex items-center gap-3 px-4 py-2.5 min-h-[44px]",
+                                  "text-sm text-gray-600",
+                                  "hover:bg-gray-100 hover:text-gray-900 transition-colors",
+                                  i < item.children.length - 1 &&
+                                    "border-b border-gray-100"
+                                )}
+                              >
+                                <span className="w-1.5 h-1.5 rounded-full bg-gray-300 flex-shrink-0" />
+                                {child.label}
+                              </LocalizedClientLink>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
                     </div>
                   </div>
                 ) : null}
@@ -197,11 +297,11 @@ export default function SideMenu({
           </ul>
         </nav>
 
-        {/* Footer — country select + copyright */}
-        <div className="px-5 py-4 border-t border-gray-100 flex flex-col gap-3">
+        {/* ── Footer ── */}
+        <div className="px-4 py-3 border-t border-gray-100 flex items-center justify-between gap-3">
           {regions && (
             <div
-              className="flex justify-between items-center"
+              className="flex items-center gap-1.5 text-xs text-gray-500 cursor-pointer hover:text-gray-700 transition-colors"
               onMouseEnter={toggleState.open}
               onMouseLeave={toggleState.close}
             >
@@ -214,8 +314,8 @@ export default function SideMenu({
               />
             </div>
           )}
-          <p className="text-xs text-gray-400">
-            © {new Date().getFullYear()} Liqnic. All rights reserved.
+          <p className="text-[11px] text-gray-300 ml-auto">
+            © {new Date().getFullYear()} Liqnic
           </p>
         </div>
       </div>

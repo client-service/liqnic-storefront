@@ -16,6 +16,7 @@ export async function buildMenuItems(): Promise<MenuItem[]> {
 
       return {
         label: parent.name,
+        href: parent.handle,
         dropdown: subcategories.length > 0,
         children: subcategories.map((sub: any) => ({
           label: sub.name,
