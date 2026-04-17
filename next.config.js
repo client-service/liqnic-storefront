@@ -19,8 +19,6 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
   images: {
-    // unoptimized: false,
-    qualities: [50],
     remotePatterns: [
       {
         protocol: "http",
