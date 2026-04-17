@@ -19,7 +19,7 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
   images: {
-    unoptimized: true,
+    unoptimized: false,
     remotePatterns: [
       {
         protocol: "http",
@@ -28,6 +28,10 @@ const nextConfig = {
       {
         protocol: "https",
         hostname: "api.liqnic.com",
+      },
+      {
+        protocol: "https",
+        hostname: "api.dev.liqnic.com",
       }
     ],
   },
