@@ -38,15 +38,13 @@ ENV NODE_ENV=production
 
 WORKDIR /app
 
-# Include only the release build and production packages.
-COPY --from=build-target /app/node_modules /app/node_modules
-COPY --from=build-target /app/.next /app/.next
-COPY --from=build-target /app/package.json /app/package.json
-COPY --from=build-target /app/public /app/public
-COPY --from=build-target /app/next.config.js /app/next.config.js
-COPY --from=build-target /app/check-env-variables.js /app/check-env-variables.js
+# Only copy the necessary standalone files
+COPY --from=build-target /app/public ./public
+COPY --from=build-target /app/.next/standalone ./
+COPY --from=build-target /app/.next/static ./.next/static
+COPY --from=build-target /app/check-env-variables.js ./check-env-variables.js
 
 # PORT ID inside docker container
 EXPOSE 3000
 
-CMD ["npm", "start"]
+CMD ["node", "server.js"]
