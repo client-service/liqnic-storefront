@@ -35,6 +35,8 @@ RUN npm prune --production
 # PROD
 FROM node:22-alpine AS prod-target
 ENV NODE_ENV=production
+# Force sharp to use only 1 core of the CPU
+ENV SHARP_CONCURRENCY=1
 
 WORKDIR /app
 
