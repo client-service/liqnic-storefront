@@ -51,7 +51,7 @@ export const listProducts = async ({
 
   const next = {
     ...(await getCacheOptions("products")),
-    revalidate: 60,
+    revalidate: 3600,
   }
 
   return sdk.client
