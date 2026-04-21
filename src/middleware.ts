@@ -10,7 +10,7 @@ const regionMapCache = {
   regionMapUpdated: Date.now(),
 }
 
-async function getRegionMap(cacheId: string) {
+async function getRegionMap() {
   const { regionMap, regionMapUpdated } = regionMapCache
 
   if (!BACKEND_URL) {
@@ -29,18 +29,9 @@ async function getRegionMap(cacheId: string) {
       },
       next: {
         revalidate: 3600,
-        tags: [`regions-${cacheId}`],
+        tags: ["regions"],
       },
-      cache: "force-cache",
-    }).then(async (response) => {
-      const json = await response.json()
-
-      if (!response.ok) {
-        throw new Error(json.message)
-      }
-
-      return json
-    })
+    }).then((res) => res.json())
 
     if (!regions?.length) {
       throw new Error(
@@ -93,65 +84,119 @@ async function getCountryCode(
   }
 }
 
-/**
- * Middleware to handle region selection and onboarding status.
- */
 export async function middleware(request: NextRequest) {
-  /**
-   * ❌ OLD LOGIC (causing redirect loop):
-   *
-   * let redirectUrl = request.nextUrl.href
-   * let response = NextResponse.redirect(redirectUrl, 307)
-   *
-   * Problem: this always initializes the response as a redirect to the SAME URL.
-   * If no early return (NextResponse.next()), the middleware just keeps redirecting
-   * to itself → ERR_TOO_MANY_REDIRECTS.
-   */
+  // ─── 1. FAST BYPASS FOR NEPAL (np) ──────────────────────────────────────────
+  // If the URL already starts with /np, skip the heavy Region Map fetching 
+  // and IP parsing entirely to save CPU on every scroll/prefetch.
+  if (request.nextUrl.pathname.startsWith(`/${DEFAULT_REGION}`)) {
+    let response = NextResponse.next()
 
-  // ✅ FIXED: start with NextResponse.next() (allow request to continue normally)
+    // Ensure cache ID exists for Medusa
+    let cacheIdCookie = request.cookies.get("_medusa_cache_id")
+    if (!cacheIdCookie) {
+      response.cookies.set("_medusa_cache_id", crypto.randomUUID(), {
+        maxAge: 60 * 60 * 24,
+      })
+    }
+
+    const searchParams = request.nextUrl.searchParams
+    const isOnboarding = searchParams.get("onboarding") === "true"
+    const cartId = searchParams.get("cart_id")
+    const checkoutStep = searchParams.get("step")
+    const cartIdCookie = request.cookies.get("_medusa_cart_id")
+
+    // The absolute fastest path: Normal browsing inside /np with no special flags
+    if (!isOnboarding && !cartId && !checkoutStep && cacheIdCookie) {
+      return response
+    }
+
+    // Handle modifiers (Cart sync, onboarding, checkout routing)
+    let redirectNeeded = false
+    const redirectUrl = request.nextUrl.clone()
+
+    if (isOnboarding) {
+      response.cookies.set("_medusa_onboarding", "true", { maxAge: 60 * 60 * 24 })
+      redirectUrl.searchParams.delete("onboarding")
+      redirectNeeded = true
+    }
+
+    if (cartId && !cartIdCookie) {
+      response.cookies.set("_medusa_cart_id", cartId, { maxAge: 60 * 60 * 24 })
+      redirectUrl.searchParams.delete("cart_id")
+      redirectNeeded = true
+    }
+
+    if (checkoutStep) {
+      redirectUrl.searchParams.delete("step")
+      redirectUrl.pathname = `/${DEFAULT_REGION}/checkout`
+      redirectNeeded = true
+    }
+
+    if (redirectNeeded) {
+      return NextResponse.redirect(redirectUrl, 307)
+    }
+
+    return response
+  }
+
+  // ─── 2. ROOT REDIRECT ─────────────────────────────────────────────────────
+  // Instantly push users from the root "/" to "/np"
+  if (request.nextUrl.pathname === "/") {
+    const queryString = request.nextUrl.search ?? ""
+    return NextResponse.redirect(
+      `${request.nextUrl.origin}/${DEFAULT_REGION}${queryString}`,
+      307
+    )
+  }
+
+  // ─── 3. HEAVY FALLBACK FOR OTHER ROUTES ───────────────────────────────────
+  // We only run the original multi-region resolution logic if they hit something
+  // like "/us" or "/in" that isn't our default region.
+  const searchParams = request.nextUrl.searchParams
+  const isOnboarding = searchParams.get("onboarding") === "true"
+  const cartId = searchParams.get("cart_id")
+  const checkoutStep = searchParams.get("step")
+  const onboardingCookie = request.cookies.get("_medusa_onboarding")
+  const cartIdCookie = request.cookies.get("_medusa_cart_id")
+
   let response = NextResponse.next()
 
-  let cacheIdCookie = request.cookies.get("_medusa_cache_id")
-  let cacheId = cacheIdCookie?.value || crypto.randomUUID()
-
-  const regionMap = await getRegionMap(cacheId)
+  const regionMap = await getRegionMap()
   const countryCode = regionMap && (await getCountryCode(request, regionMap))
 
   const urlHasCountryCode =
     countryCode && request.nextUrl.pathname.split("/")[1].includes(countryCode)
 
-  // Case 1: Already has country code + cache cookie → just continue
-  if (urlHasCountryCode && cacheIdCookie) {
+  if (
+    urlHasCountryCode &&
+    (!isOnboarding || onboardingCookie) &&
+    (!cartId || cartIdCookie)
+  ) {
     return response
   }
 
-  // Case 2: Has country code but no cache cookie → set cookie and continue
-  if (urlHasCountryCode && !cacheIdCookie) {
-    response.cookies.set("_medusa_cache_id", cacheId, {
-      maxAge: 60 * 60 * 24,
-    })
-    return response
+  const redirectUrl = request.nextUrl.clone()
+
+  if (!urlHasCountryCode) {
+    redirectUrl.pathname = `/${countryCode || DEFAULT_REGION}${redirectUrl.pathname}`
   }
 
-  // Case 3: Skip static assets (avoid unnecessary middleware work)
-  if (request.nextUrl.pathname.includes(".")) {
-    return response
+  if (isOnboarding) {
+    response.cookies.set("_medusa_onboarding", "true", { maxAge: 60 * 60 * 24 })
+    redirectUrl.searchParams.delete("onboarding")
   }
 
-  // Case 4: If no country code in URL → redirect user to URL with region
-  if (!urlHasCountryCode && countryCode) {
-    const redirectPath =
-      request.nextUrl.pathname === "/" ? "" : request.nextUrl.pathname
-
-    const queryString = request.nextUrl.search ?? ""
-
-    const redirectUrl = `${request.nextUrl.origin}/${countryCode}${redirectPath}${queryString}`
-
-    return NextResponse.redirect(redirectUrl, 307)
+  if (cartId && !cartIdCookie) {
+    response.cookies.set("_medusa_cart_id", cartId, { maxAge: 60 * 60 * 24 })
+    redirectUrl.searchParams.delete("cart_id")
   }
 
-  // Default: continue request
-  return response
+  if (checkoutStep) {
+    redirectUrl.searchParams.delete("step")
+    redirectUrl.pathname = `/${countryCode || DEFAULT_REGION}/checkout`
+  }
+
+  return NextResponse.redirect(redirectUrl, 307)
 }
 
 export const config = {
