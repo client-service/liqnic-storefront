@@ -7,7 +7,7 @@ import { getCacheOptions } from "./cookies"
 export const retrieveCollection = async (id: string) => {
   const next = {
     ...(await getCacheOptions("collections")),
-    revalidate: 60,
+    revalidate: 3600,
   }
 
   return sdk.client
@@ -26,7 +26,7 @@ export const listCollections = async (
 ): Promise<{ collections: HttpTypes.StoreCollection[]; count: number }> => {
   const next = {
     ...(await getCacheOptions("collections")),
-    revalidate: 60,
+    revalidate: 3600,
   }
 
   queryParams.limit = queryParams.limit || "100"
@@ -49,7 +49,7 @@ export const getCollectionByHandle = async (
 ): Promise<HttpTypes.StoreCollection> => {
   const next = {
     ...(await getCacheOptions("collections")),
-    revalidate: 60,
+    revalidate: 3600,
   }
 
   return sdk.client

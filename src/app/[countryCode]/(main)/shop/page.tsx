@@ -2,6 +2,8 @@ import { Metadata } from "next"
 import { getBaseURL } from "@lib/util/env"
 import { SortOptions } from "@modules/store/components/refinement-list/sort-products"
 import StoreTemplate from "@modules/store/templates"
+import { Suspense } from 'react'
+import SkeletonProductGrid from '../../../../modules/skeletons/templates/skeleton-product-grid'
 
 export const metadata: Metadata = {
   metadataBase: new URL(getBaseURL()),
@@ -119,8 +121,8 @@ type Params = {
 
 export default async function StorePage(props: Params) {
   const params = await props.params
-  const searchParams = await props.searchParams
-  const { sortBy, page, query } = searchParams
+  // const searchParams = await props.searchParams
+  // const { sortBy, page, query } = searchParams
 
   return (
     <>
@@ -128,12 +130,34 @@ export default async function StorePage(props: Params) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <StoreTemplate
-        sortBy={sortBy}
-        page={page}
-        countryCode={params.countryCode}
-        query={query}
-      />
+      <Suspense fallback={<SkeletonProductGrid />}>
+        {/* Pass the un-awaited searchParams promise down */}
+        <StoreTemplateWrapper 
+          countryCode={params.countryCode} 
+          searchParamsPromise={props.searchParams} 
+        />
+      </Suspense>
     </>
+  )
+}
+
+// Wrapper to safely await searchParams inside the Suspense boundary
+async function StoreTemplateWrapper({
+  countryCode,
+  searchParamsPromise,
+}: {
+  countryCode: string
+  searchParamsPromise: Params["searchParams"]
+}) {
+  const searchParams = await searchParamsPromise
+  const { sortBy, page, query } = searchParams
+
+  return (
+    <StoreTemplate
+      sortBy={sortBy}
+      page={page}
+      countryCode={countryCode}
+      query={query}
+    />
   )
 }
