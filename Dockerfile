@@ -37,6 +37,8 @@ FROM node:22-alpine AS prod-target
 ENV NODE_ENV=production
 # Force sharp to use only 1 core of the CPU
 ENV SHARP_CONCURRENCY=1
+# Tell Node.js it can use up to 2GB of RAM before aggressive GC
+ENV NODE_OPTIONS=--max-old-space-size=2048
 
 WORKDIR /app
 
