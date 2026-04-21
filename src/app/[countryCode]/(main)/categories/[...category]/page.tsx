@@ -6,6 +6,8 @@ import { listRegions } from "@lib/data/regions"
 import { StoreRegion } from "@medusajs/types"
 import CategoryTemplate from "@modules/categories/templates"
 import { SortOptions } from "@modules/store/components/refinement-list/sort-products"
+import { Suspense } from 'react'
+import SkeletonProductGrid from '../../../../../modules/skeletons/templates/skeleton-product-grid'
 
 type Props = {
   params: Promise<{ category: string[]; countryCode: string }>
@@ -82,9 +84,9 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
 }
 
 export default async function CategoryPage(props: Props) {
-  const searchParams = await props.searchParams
+  // const searchParams = await props.searchParams
   const params = await props.params
-  const { sortBy, page } = searchParams
+  // const { sortBy, page } = searchParams
 
   let productCategory = null
   try {
@@ -121,11 +123,36 @@ export default async function CategoryPage(props: Props) {
   }
 
   return (
+    <Suspense fallback={<SkeletonProductGrid />}>
+      {/* Pass the un-awaited searchParams promise down */}
+      <CategoryTemplateWrapper 
+        category={productCategory} 
+        countryCode={params.countryCode} 
+        searchParamsPromise={props.searchParams} 
+      />
+    </Suspense>
+  )
+}
+
+// Wrapper to safely await searchParams inside the Suspense boundary
+async function CategoryTemplateWrapper({
+  category,
+  countryCode,
+  searchParamsPromise,
+}: {
+  category: any
+  countryCode: string
+  searchParamsPromise: Props["searchParams"]
+}) {
+  const searchParams = await searchParamsPromise
+  const { sortBy, page } = searchParams
+
+  return (
     <CategoryTemplate
-      category={productCategory}
+      category={category}
       sortBy={sortBy}
       page={page}
-      countryCode={params.countryCode}
+      countryCode={countryCode}
     />
   )
 }
