@@ -265,7 +265,7 @@ export default function ProductActions({
       <div className="flex items-center gap-2 mt-2">
         <Button
           onClick={decrementQuantity}
-          disabled={quantity <= 1 || !!disabled || isAdding}
+          disabled={quantity <= 1 || !!disabled || isAdding || isPending}
           variant="secondary"
         >
           -
@@ -273,7 +273,7 @@ export default function ProductActions({
         <span className="w-8 text-center">{quantity}</span>
         <Button
           onClick={incrementQuantity}
-          disabled={quantity >= maxQuantity || !!disabled || isAdding}
+          disabled={quantity >= maxQuantity || !!disabled || isAdding || isPending}
           variant="secondary"
         >
           +
