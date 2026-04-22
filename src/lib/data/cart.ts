@@ -112,6 +112,7 @@ export async function updateCart(data: HttpTypes.StoreUpdateCart) {
     .catch(medusaError)
 }
 
+// Replace your existing addToCart function with this optimized version
 export async function addToCart({
   variantId,
   quantity,
@@ -125,19 +126,29 @@ export async function addToCart({
     throw new Error("Missing variant ID when adding to cart")
   }
 
-  const cart = await getOrSetCart(countryCode)
+  // OPTIMIZATION 1: Instantly read the cookie. (0ms)
+  let cartId = await getCartId()
+  const headers = { ...(await getAuthHeaders()) }
 
-  if (!cart) {
-    throw new Error("Error retrieving or creating cart")
+  // OPTIMIZATION 2: Only do a database fetch if the user is completely new (no cart cookie)
+  if (!cartId) {
+    const region = await getRegion(countryCode)
+    if (!region) throw new Error("Region not found")
+
+    const cartResp = await sdk.store.cart.create(
+      { region_id: region.id },
+      {},
+      headers
+    )
+    cartId = cartResp.cart.id
+    await setCartId(cartId)
   }
 
-  const headers = {
-    ...(await getAuthHeaders()),
-  }
-
+  // OPTIMIZATION 3: Add the item directly using the ID!
+  // We completely skip the heavy retrieveCart() database JOIN query.
   await sdk.store.cart
     .createLineItem(
-      cart.id,
+      cartId,
       {
         variant_id: variantId,
         quantity,
@@ -146,6 +157,7 @@ export async function addToCart({
       headers
     )
     .then(async () => {
+      // Trigger the Next.js UI update
       const cartCacheTag = await getCacheTag("carts")
       revalidateTag(cartCacheTag)
 
