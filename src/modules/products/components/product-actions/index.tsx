@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useMemo, useRef } from "react"
+import { useState, useEffect, useMemo, useRef, useTransition } from "react"
 import { addToCart } from "@lib/data/cart"
 import { useIntersection } from "@lib/hooks/use-in-view"
 import { HttpTypes } from "@medusajs/types"
@@ -138,6 +138,8 @@ export default function ProductActions({
   const [isAdding, setIsAdding] = useState(false)
   const [quantity, setQuantity] = useState(1)
 
+  const [isPending, startTransition] = useTransition()
+  
   const countryCode = useParams().countryCode as string
   const actionsRef = useRef<HTMLDivElement>(null)
   const inView = useIntersection(actionsRef, "0px")
@@ -216,17 +218,20 @@ export default function ProductActions({
     )
   }
 
-  const handleAddToCart = async () => {
+  const handleAddToCart = () => {
     if (!selectedVariant?.id) return
     setIsAdding(true)
-    try {
-      await addToCart({ variantId: selectedVariant.id, quantity, countryCode })
-      showSuccessToast()
-    } catch (err: any) {
-      showErrorToast(err?.message ?? "Failed to add to cart. Please try again.")
-    } finally {
-      setIsAdding(false)
-    }
+    // Push the heavy server action into the background
+    startTransition(async () => {
+      try {
+        await addToCart({ variantId: selectedVariant.id, quantity, countryCode })
+        showSuccessToast() // Show toast when server confirms
+      } catch (err: any) {
+        showErrorToast(err?.message ?? "Failed to add to cart. Please try again.")
+      } finally {
+        setIsAdding(false)
+      }
+    })
   }
 
   const incrementQuantity = () =>
@@ -282,6 +287,7 @@ export default function ProductActions({
           !selectedVariant ||
           !!disabled ||
           isAdding ||
+          isPending ||
           !isValidVariant
         }
         variant="primary"
