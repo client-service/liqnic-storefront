@@ -11,7 +11,7 @@ import LineItemPrice from "@modules/common/components/line-item-price"
 import LineItemUnitPrice from "@modules/common/components/line-item-unit-price"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import Spinner from "@modules/common/icons/spinner"
-import { useState } from "react"
+import { useState, useTransition } from "react"
 
 type ItemProps = {
   item: HttpTypes.StoreCartLineItem
@@ -20,24 +20,27 @@ type ItemProps = {
 }
 
 const Item = ({ item, type = "full", currencyCode }: ItemProps) => {
-  const [updating, setUpdating] = useState(false)
+  const [isUpdating, setIsUpdating] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [isPending, startTransition] = useTransition()
 
-  const changeQuantity = async (quantity: number) => {
+  const changeQuantity = (newQuantity: number) => {
     setError(null)
-    setUpdating(true)
+    setIsUpdating(true)
 
-    await updateLineItem({
-      lineId: item.id,
-      quantity,
+    // Push the heavy server update to the background
+    startTransition(async () => {
+      try {
+        await updateLineItem({ lineId: item.id, quantity: newQuantity })
+      } catch (err: any) {
+        setError(err.message || "Failed to update quantity")
+      } finally {
+        setIsUpdating(false)
+      }
     })
-      .catch((err) => {
-        setError(err.message)
-      })
-      .finally(() => {
-        setUpdating(false)
-      })
   }
+
+  const loading = isUpdating || isPending
 
   // TODO: Update this to grab the actual max inventory
   const maxQtyFromInventory = 10
@@ -81,6 +84,7 @@ const Item = ({ item, type = "full", currencyCode }: ItemProps) => {
               <div className="flex gap-2 items-center w-28">
                 <CartItemSelect
                   value={item.quantity}
+                  disabled={loading} // <-- CRITICAL: Prevents spamming actions
                   onChange={(value) =>
                     changeQuantity(parseInt(value.target.value))
                   }
@@ -103,7 +107,7 @@ const Item = ({ item, type = "full", currencyCode }: ItemProps) => {
                     1
                   </option>
                 </CartItemSelect>
-                {updating && <Spinner />}
+                {loading && <Spinner />}
               </div>
               <ErrorMessage error={error} data-testid="product-error-message" />
             </Table.Cell>

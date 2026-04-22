@@ -1,7 +1,9 @@
+"use client"
+
 import { deleteLineItem } from "@lib/data/cart"
 import { Spinner, Trash } from "@medusajs/icons"
 import { clx } from "@medusajs/ui"
-import { useState } from "react"
+import { useState, useTransition } from "react"
 import { toast } from "react-toastify"
 
 // ─── Toast content components ─────────────────────────────────────────────────
@@ -89,33 +91,41 @@ const DeleteButton = ({
   className?: string
 }) => {
   const [isDeleting, setIsDeleting] = useState(false)
-
-  const handleDelete = async () => {
+  const [isPending, startTransition] = useTransition()
+  
+  const handleDelete = () => {
     setIsDeleting(true)
-    try {
-      await deleteLineItem(id)
-      toast.success(<DeleteSuccessToast name={label} />, {
-        ...baseToastOpts,
-        autoClose: 3000,
-        progressStyle: { background: "#f43f5e" },
-      })
-    } catch {
-      toast.error(
-        <DeleteErrorToast
-          onRetry={() => {
-            toast.dismiss()
-            handleDelete()
-          }}
-        />,
-        {
+    // Push the server action into the background
+    startTransition(async () => {
+      try {
+        await deleteLineItem(id)
+        toast.success(<DeleteSuccessToast name={label} />, {
           ...baseToastOpts,
-          autoClose: 6000,
+          autoClose: 3000,
           progressStyle: { background: "#f43f5e" },
-        }
-      )
-      setIsDeleting(false)
-    }
+        })
+      } catch {
+        toast.error(
+          <DeleteErrorToast
+            onRetry={() => {
+              toast.dismiss()
+              handleDelete()
+            }}
+          />,
+          {
+            ...baseToastOpts,
+            autoClose: 6000,
+            progressStyle: { background: "#f43f5e" },
+          }
+        )
+      } finally {
+        setIsDeleting(false)
+      }
+    })
   }
+
+  // Use both isDeleting and isPending to control disabled state and spinner
+  const loading = isDeleting || isPending
 
   return (
     <div
@@ -127,9 +137,9 @@ const DeleteButton = ({
       <button
         className="flex gap-x-1 text-ui-fg-subtle hover:text-ui-fg-base cursor-pointer"
         onClick={handleDelete}
-        disabled={isDeleting}
+        disabled={loading}
       >
-        {isDeleting ? (
+        {loading ? (
           <Spinner className="animate-spin" />
         ) : (
           <Trash className="text-red-500" />
