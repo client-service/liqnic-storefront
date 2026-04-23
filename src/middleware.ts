@@ -86,7 +86,7 @@ async function getCountryCode(
 
 export async function middleware(request: NextRequest) {
   // ─── 1. FAST BYPASS FOR NEPAL (np) ──────────────────────────────────────────
-  // If the URL already starts with /np, skip the heavy Region Map fetching 
+  // If the URL already starts with /np, skip the heavy Region Map fetching
   // and IP parsing entirely to save CPU on every scroll/prefetch.
   if (request.nextUrl.pathname.startsWith(`/${DEFAULT_REGION}`)) {
     let response = NextResponse.next()
@@ -115,7 +115,9 @@ export async function middleware(request: NextRequest) {
     const redirectUrl = request.nextUrl.clone()
 
     if (isOnboarding) {
-      response.cookies.set("_medusa_onboarding", "true", { maxAge: 60 * 60 * 24 })
+      response.cookies.set("_medusa_onboarding", "true", {
+        maxAge: 60 * 60 * 24,
+      })
       redirectUrl.searchParams.delete("onboarding")
       redirectNeeded = true
     }
@@ -125,11 +127,16 @@ export async function middleware(request: NextRequest) {
       redirectUrl.searchParams.delete("cart_id")
       redirectNeeded = true
     }
-
     if (checkoutStep) {
-      redirectUrl.searchParams.delete("step")
-      redirectUrl.pathname = `/${DEFAULT_REGION}/checkout`
-      redirectNeeded = true
+      const isCheckoutPage = request.nextUrl.pathname.includes("/checkout")
+
+      if (!isCheckoutPage) {
+        // Only redirect to checkout page if not already there
+        redirectUrl.searchParams.delete("step")
+        redirectUrl.pathname = `/${DEFAULT_REGION}/checkout`
+        redirectNeeded = true
+      }
+      // If already on checkout, leave ?step= alone
     }
 
     if (redirectNeeded) {
@@ -178,7 +185,9 @@ export async function middleware(request: NextRequest) {
   const redirectUrl = request.nextUrl.clone()
 
   if (!urlHasCountryCode) {
-    redirectUrl.pathname = `/${countryCode || DEFAULT_REGION}${redirectUrl.pathname}`
+    redirectUrl.pathname = `/${countryCode || DEFAULT_REGION}${
+      redirectUrl.pathname
+    }`
   }
 
   if (isOnboarding) {
