@@ -18,25 +18,27 @@ const ShippingAddress = ({
   checked: boolean
   onChange: () => void
 }) => {
-  const [formData, setFormData] = useState<Record<string, any>>({
-    "shipping_address.first_name": cart?.shipping_address?.first_name || "",
-    "shipping_address.last_name": cart?.shipping_address?.last_name || "",
+  const [formData, setFormData] = useState<Record<string, any>>(() => ({
+    "shipping_address.first_name":
+      cart?.shipping_address?.first_name || customer?.first_name || "",
+    "shipping_address.last_name":
+      cart?.shipping_address?.last_name || customer?.last_name || "",
     "shipping_address.address_1": cart?.shipping_address?.address_1 || "",
     "shipping_address.company": cart?.shipping_address?.company || "",
     "shipping_address.postal_code": cart?.shipping_address?.postal_code || "",
     "shipping_address.city": cart?.shipping_address?.city || "",
     "shipping_address.country_code": cart?.shipping_address?.country_code || "",
     "shipping_address.province": cart?.shipping_address?.province || "",
-    "shipping_address.phone": cart?.shipping_address?.phone || "",
-    email: cart?.email || "",
-  })
+    "shipping_address.phone":
+      cart?.shipping_address?.phone || customer?.phone || "",
+    email: cart?.email || customer?.email || "",
+  }))
 
   const countriesInRegion = useMemo(
     () => cart?.region?.countries?.map((c) => c.iso_2),
     [cart?.region]
   )
 
-  // check if customer has saved addresses that are in the current region
   const addressesInRegion = useMemo(
     () =>
       customer?.addresses.filter(
@@ -71,20 +73,35 @@ const ShippingAddress = ({
   }
 
   useEffect(() => {
-    // Ensure cart is not null and has a shipping_address before setting form data
-    if (cart && cart.shipping_address) {
-      setFormAddress(cart?.shipping_address, cart?.email)
-    }
+    const hasShippingAddress = !!(
+      cart?.shipping_address?.first_name ||
+      cart?.shipping_address?.address_1 ||
+      cart?.shipping_address?.city
+    )
 
-    if (cart && !cart.email && customer?.email) {
-      setFormAddress(undefined, customer.email)
+    if (cart?.shipping_address && hasShippingAddress) {
+      setFormAddress(cart.shipping_address, cart.email ?? customer?.email)
+    } else if (customer) {
+      setFormData((prev) => ({
+        ...prev,
+        "shipping_address.first_name":
+          prev["shipping_address.first_name"] || customer.first_name || "",
+        "shipping_address.last_name":
+          prev["shipping_address.last_name"] || customer.last_name || "",
+        "shipping_address.phone":
+          prev["shipping_address.phone"] || customer.phone || "",
+        email: prev.email || customer.email || "",
+      }))
+    } else if (cart && !cart.email && customer?.email) {
+      setFormData((prev) => ({
+        ...prev,
+        email: customer.email || "",
+      }))
     }
-  }, [cart]) // Add cart as a dependency
+  }, [cart, customer])
 
   const handleChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLInputElement | HTMLSelectElement
-    >
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     setFormData({
       ...formData,

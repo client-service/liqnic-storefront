@@ -13,12 +13,17 @@ export default function UpsellModal({ children }: Props) {
   const pathname = usePathname()
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setOpen(true)
-    }, 1000)
+    const hasSeenModal = sessionStorage.getItem("upsellShown")
 
-    return () => clearTimeout(timer)
-  }, [pathname])
+    if (!hasSeenModal) {
+      const timer = setTimeout(() => {
+        setOpen(true)
+        sessionStorage.setItem("upsellShown", "true")
+      }, 1000)
+
+      return () => clearTimeout(timer)
+    }
+  }, [])
 
   if (!open) return null
 
