@@ -11,7 +11,6 @@ import Navbar from "components/navbar"
 import PromoBanner from "components/promo-banner"
 import { ToastContainer } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
-import AgeVerificationWrapper from "components/AgeVerificationWrapper"
 
 export const metadata: Metadata = {
   metadataBase: new URL(getBaseURL()),
