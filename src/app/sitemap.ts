@@ -1,5 +1,11 @@
 import { MetadataRoute } from "next"
 
+// ─── IMPORTANT ───────────────────────────────────────────────────────────────
+// force-dynamic tells Next.js to generate the sitemap at REQUEST time,
+// not at build time. This prevents CI build timeouts when the Medusa
+// backend isn't reachable during the Docker build.
+export const dynamic = "force-dynamic"
+
 const BASE_URL = "https://liqnic.com"
 const COUNTRY = "np" // your default country code
 
@@ -18,7 +24,7 @@ async function getProducts(): Promise<
           "x-publishable-api-key":
             process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY || "",
         },
-        next: { revalidate: 3600 }, // refresh every hour
+        cache: "no-store",
       }
     )
     if (!res.ok) return []
