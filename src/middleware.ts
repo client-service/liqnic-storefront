@@ -85,13 +85,18 @@ async function getCountryCode(
 }
 
 export async function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl
+
+  // ─── 0. BYPASS SEO FILES ──────────────────────────────────────────────────
+  // Never redirect sitemap.xml or robots.txt — Google must reach these at root
+  if (pathname === "/sitemap.xml" || pathname === "/robots.txt") {
+    return NextResponse.next()
+  }
+
   // ─── 1. FAST BYPASS FOR NEPAL (np) ──────────────────────────────────────────
-  // If the URL already starts with /np, skip the heavy Region Map fetching
-  // and IP parsing entirely to save CPU on every scroll/prefetch.
-  if (request.nextUrl.pathname.startsWith(`/${DEFAULT_REGION}`)) {
+  if (pathname.startsWith(`/${DEFAULT_REGION}`)) {
     let response = NextResponse.next()
 
-    // Ensure cache ID exists for Medusa
     let cacheIdCookie = request.cookies.get("_medusa_cache_id")
     if (!cacheIdCookie) {
       response.cookies.set("_medusa_cache_id", crypto.randomUUID(), {
@@ -105,12 +110,10 @@ export async function middleware(request: NextRequest) {
     const checkoutStep = searchParams.get("step")
     const cartIdCookie = request.cookies.get("_medusa_cart_id")
 
-    // The absolute fastest path: Normal browsing inside /np with no special flags
     if (!isOnboarding && !cartId && !checkoutStep && cacheIdCookie) {
       return response
     }
 
-    // Handle modifiers (Cart sync, onboarding, checkout routing)
     let redirectNeeded = false
     const redirectUrl = request.nextUrl.clone()
 
@@ -127,16 +130,14 @@ export async function middleware(request: NextRequest) {
       redirectUrl.searchParams.delete("cart_id")
       redirectNeeded = true
     }
-    if (checkoutStep) {
-      const isCheckoutPage = request.nextUrl.pathname.includes("/checkout")
 
+    if (checkoutStep) {
+      const isCheckoutPage = pathname.includes("/checkout")
       if (!isCheckoutPage) {
-        // Only redirect to checkout page if not already there
         redirectUrl.searchParams.delete("step")
         redirectUrl.pathname = `/${DEFAULT_REGION}/checkout`
         redirectNeeded = true
       }
-      // If already on checkout, leave ?step= alone
     }
 
     if (redirectNeeded) {
@@ -147,8 +148,7 @@ export async function middleware(request: NextRequest) {
   }
 
   // ─── 2. ROOT REDIRECT ─────────────────────────────────────────────────────
-  // Instantly push users from the root "/" to "/np"
-  if (request.nextUrl.pathname === "/") {
+  if (pathname === "/") {
     const queryString = request.nextUrl.search ?? ""
     return NextResponse.redirect(
       `${request.nextUrl.origin}/${DEFAULT_REGION}${queryString}`,
@@ -157,8 +157,6 @@ export async function middleware(request: NextRequest) {
   }
 
   // ─── 3. HEAVY FALLBACK FOR OTHER ROUTES ───────────────────────────────────
-  // We only run the original multi-region resolution logic if they hit something
-  // like "/us" or "/in" that isn't our default region.
   const searchParams = request.nextUrl.searchParams
   const isOnboarding = searchParams.get("onboarding") === "true"
   const cartId = searchParams.get("cart_id")
@@ -210,6 +208,7 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    "/((?!api|_next/static|_next/image|favicon.ico|images|assets|png|svg|jpg|jpeg|gif|webp).*)",
+    // Exclude static files, api, AND sitemap/robots from middleware
+    "/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|images|assets|png|svg|jpg|jpeg|gif|webp).*)",
   ],
 }
