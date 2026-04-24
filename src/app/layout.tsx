@@ -36,7 +36,7 @@ export const metadata: Metadata = {
       "Authentic IQOS devices, ZYN pouches & premium spirits. Fast Kathmandu delivery. Nepal's most trusted 24/7 boutique.",
     images: [
       {
-        url: "/images/og-default.jpg",
+        url: "/images/og-image.png",
         width: 1200,
         height: 630,
         alt: "Liqnic — Premium Liquor and E-Cigarettes in Nepal",
@@ -49,7 +49,7 @@ export const metadata: Metadata = {
     title: "Liqnic | Nepal's Premier Liquor & E-Cigarette Store",
     description:
       "Authentic IQOS, ZYN & premium spirits. Fast Kathmandu delivery.",
-    images: ["/images/og-default.jpg"],
+    images: ["/images/og-image.png"],
   },
   robots: {
     index: true,
