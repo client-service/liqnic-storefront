@@ -18,7 +18,7 @@ async function getProducts(): Promise<
 > {
   try {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL}/store/products?limit=500&fields=handle,updated_at`,
+      `${process.env.MEDUSA_BACKEND_URL}/store/products?limit=200&fields=handle,updated_at`,
       {
         headers: {
           "x-publishable-api-key":
@@ -35,35 +35,42 @@ async function getProducts(): Promise<
   }
 }
 
-async function getcategories(): Promise<
+async function getCategories(): Promise<
   { handle: string; updated_at: string }[]
 > {
   try {
+    const backendUrl =
+      process.env.MEDUSA_BACKEND_URL ||
+      process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL
+
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL}/store/categories?limit=100&fields=handle,updated_at`,
+      `${backendUrl}/store/product-categories?limit=100&fields=handle,updated_at`,
       {
         headers: {
           "x-publishable-api-key":
             process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY || "",
         },
-        next: { revalidate: 3600 },
+        cache: "no-store",
       }
     )
     if (!res.ok) return []
     const data = await res.json()
-    return data.categories ?? []
-  } catch {
+    return data.product_categories ?? [] // ← was data.categories
+  } catch (e) {
+    console.error("Categories fetch error:", e)
     return []
   }
 }
-
 // ─── Sitemap ─────────────────────────────────────────────────────────────────
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [products, categories] = await Promise.all([
     getProducts(),
-    getcategories(),
+    getCategories(),
   ])
+
+  console.log("Sitemap — products:", products.length)
+  console.log("Sitemap — categories:", categories.length)
 
   // ── Static pages ────────────────────────────────────────────────────────
   const staticPages: MetadataRoute.Sitemap = [
@@ -100,7 +107,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ]
 
   // ── Collection pages ─────────────────────────────────────────────────────
-  const collectionPages: MetadataRoute.Sitemap = categories.map((c) => ({
+  const categoriesPages: MetadataRoute.Sitemap = categories.map((c) => ({
     url: `${BASE_URL}/${COUNTRY}/categories/${c.handle}`,
     lastModified: new Date(c.updated_at),
     changeFrequency: "weekly" as const,
@@ -115,5 +122,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.7,
   }))
 
-  return [...staticPages, ...collectionPages, ...productPages]
+  return [...staticPages, ...categoriesPages, ...productPages]
 }
