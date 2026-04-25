@@ -1,25 +1,29 @@
-const MEDUSA_BACKEND_URL =
-  process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL ?? "http://localhost:9000"
-const PUBLISHABLE_KEY = process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY ?? ""
+function getBackendUrl() {
+  const url =
+    process.env.MEDUSA_BACKEND_URL ||
+    process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL ||
+    "http://localhost:9000"
+  return url
+}
 
-const medusaHeaders = {
-  "Content-Type": "application/json",
-  "x-publishable-api-key": PUBLISHABLE_KEY,
+function getHeaders() {
+  const key = process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY ?? ""
+  return {
+    "Content-Type": "application/json",
+    "x-publishable-api-key": key,
+  }
 }
 
 export async function initPaymentSession(cartId: string, providerId: string) {
-  // Step 1 — create payment collection
-  const colRes = await fetch(
-    `${MEDUSA_BACKEND_URL}/store/payment-collections`,
-    {
-      method: "POST",
-      headers: medusaHeaders,
-      body: JSON.stringify({ cart_id: cartId }),
-    }
-  )
+  const colRes = await fetch(`${getBackendUrl()}/store/payment-collections`, {
+    method: "POST",
+    headers: getHeaders(),
+    body: JSON.stringify({ cart_id: cartId }),
+  })
 
   if (!colRes.ok) {
     const body = await colRes.json().catch(() => ({}))
+    console.error("[initPaymentSession] collection error:", body)
     throw new Error(
       body?.message ?? `Failed to create payment collection (${colRes.status})`
     )
@@ -27,24 +31,27 @@ export async function initPaymentSession(cartId: string, providerId: string) {
 
   const { payment_collection } = await colRes.json()
 
-  // Step 2 — initialize session on that collection
   const sesRes = await fetch(
-    `${MEDUSA_BACKEND_URL}/store/payment-collections/${payment_collection.id}/payment-sessions`,
+    `${getBackendUrl()}/store/payment-collections/${
+      payment_collection.id
+    }/payment-sessions`,
     {
       method: "POST",
-      headers: medusaHeaders,
+      headers: getHeaders(),
       body: JSON.stringify({ provider_id: providerId }),
     }
   )
 
   if (!sesRes.ok) {
     const body = await sesRes.json().catch(() => ({}))
+    console.error("[initPaymentSession] session error:", body)
     throw new Error(
       body?.message ?? `Failed to init payment session (${sesRes.status})`
     )
   }
 
-  return sesRes.json()
+  const data = await sesRes.json()
+  return data
 }
 
 export async function saveQrReference(
@@ -52,9 +59,9 @@ export async function saveQrReference(
   transactionId: string,
   bankName?: string
 ) {
-  const res = await fetch(`${MEDUSA_BACKEND_URL}/store/carts/${cartId}`, {
+  const res = await fetch(`${getBackendUrl()}/store/carts/${cartId}`, {
     method: "POST",
-    headers: medusaHeaders,
+    headers: getHeaders(),
     body: JSON.stringify({
       metadata: {
         qr_transaction_id: transactionId,
@@ -65,8 +72,10 @@ export async function saveQrReference(
 
   if (!res.ok) {
     const body = await res.json().catch(() => ({}))
+    console.error("[saveQrReference] error:", body)
     throw new Error(body?.message ?? `Failed to save reference (${res.status})`)
   }
 
-  return res.json()
+  const data = await res.json()
+  return data
 }
