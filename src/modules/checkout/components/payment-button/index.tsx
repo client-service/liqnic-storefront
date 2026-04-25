@@ -1,3 +1,4 @@
+// payment-button.tsx
 "use client"
 
 import { placeOrder } from "@lib/data/cart"
@@ -29,39 +30,8 @@ const PaymentButton: React.FC<PaymentButtonProps> = ({
     setErrorMessage(null)
 
     try {
-      // Ensure cart has a proper COD payment_collection
-      if (!cart.payment_collection) {
-        cart.payment_collection = {
-          id: "fake-cod-collection",
-          status: "authorized",
-          currency_code: cart.region?.currency_code || "usd",
-          amount: cart.total,
-          payment_sessions: [],
-          payment_providers: [],
-        }
-      }
-
-      // Add a fake COD payment session if not present
-      if (
-        !cart.payment_collection.payment_sessions?.find(
-          (ps) => ps.provider_id === "pp_system_default"
-        )
-      ) {
-        cart?.payment_collection?.payment_sessions?.push({
-          id: "fake-cod-session",
-          provider_id: "pp_system_default",
-          status: "pending",
-          amount: cart.total,
-          currency_code: cart.region?.currency_code || "npr",
-          data: {},
-        })
-      }
-
       await placeOrder()
     } catch (err: any) {
-      // Next.js redirect() throws a special NEXT_REDIRECT error internally.
-      // This is NOT a real error — if we catch it we must let it propagate
-      // so the redirect to order confirmation actually happens.
       if (err?.digest?.startsWith("NEXT_REDIRECT")) {
         return
       }
@@ -78,7 +48,7 @@ const PaymentButton: React.FC<PaymentButtonProps> = ({
         onClick={handlePayment}
         data-testid={dataTestId}
         className="
-         w-auto px-6 h-12 rounded-xl
+          w-auto px-6 h-12 rounded-xl
           flex items-center justify-center gap-2
           bg-black hover:bg-gray-900 text-white
           text-sm font-semibold

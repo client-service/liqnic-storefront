@@ -65,15 +65,19 @@ export const metadata: Metadata = {
   authors: [{ name: "Liqnic", url: getBaseURL() }],
   referrer: "origin-when-cross-origin",
   icons: {
-    icon: "/favicon.ico",
-    shortcut: "/logo.png",
-    apple: "/logo.png",
+    icon: "/icon.png",
+    shortcut: "/icon.png",
+    apple: "/apple-touch-icon.png",
   },
 }
 
 export default function RootLayout(props: { children: React.ReactNode }) {
   return (
     <html lang="en" data-mode="light" className={manrope.variable}>
+      <head>
+        <link rel="icon" type="image/png" href="/icon.png" sizes="512x512" />
+        <link rel="icon" href="/favicon.ico" />
+      </head>
       <body className="">
         <AgeVerificationWrapper>
           <div className="relative">{props.children}</div>

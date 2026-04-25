@@ -167,6 +167,7 @@ export default function SideMenu({
           <div className="h-px bg-gray-100 mx-2 mb-3" />
 
           {/* Dynamic menu items */}
+
           <p className="px-2 pb-1.5 text-[10px] font-semibold tracking-widest text-gray-400 uppercase">
             Shop
           </p>
@@ -176,7 +177,7 @@ export default function SideMenu({
                 {/* ── Plain link ── */}
                 {item.href && !item.dropdown ? (
                   <LocalizedClientLink
-                    href=""
+                    href={item.href}
                     onClick={close}
                     className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors min-h-[44px]"
                   >

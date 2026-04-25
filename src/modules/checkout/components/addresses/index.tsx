@@ -34,14 +34,20 @@ const Addresses = ({
 
   const handleEdit = () => router.push(pathname + "?step=address")
 
-  // setAddresses redirects to ?step=delivery — intercept both delivery and payment
-  // and skip straight to review
   const [message, formAction, isPending] = useActionState(setAddresses, null)
 
+  // Intercept any step that isn't "address" or "review" and normalise to
+  // "review" so the address section collapses and the payment selector
+  // (which lives on the same page) is visible below it.
+  // We do NOT redirect "delivery" → "review" here anymore because that
+  // was causing the page to jump past the payment selector entirely.
   useEffect(() => {
     const step = searchParams.get("step")
+    // Only redirect the intermediate "delivery" step — Medusa's setAddresses
+    // server action redirects here after saving addresses. We want to land on
+    // the checkout page with no specific step param so everything is visible.
     if (step === "delivery" || step === "payment") {
-      router.replace(pathname + "?step=review")
+      router.replace(pathname) // ← just drop the step param entirely
     }
   }, [searchParams, pathname, router])
 
