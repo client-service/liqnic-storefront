@@ -5,6 +5,16 @@ import { useState, useEffect, useRef, useCallback } from "react"
 
 const heroData = [
   {
+    image: "/images/terea-final.png",
+    title: "TEREA Sticks. Precision Tobacco, Perfected.",
+    description:
+      "Designed exclusively for IQOS ILUMA, TEREA delivers a seamless, smoke-free experience with rich flavor and no compromise.",
+    primaryButton: "Shop Terea Packet",
+    primaryLink: "/categories/heated-tobacco",
+    secondaryButton: "Shop Tera Box",
+    secondaryLink: "/categories/heated-tobacco",
+  },
+  {
     image: "/images/slide-1.jpg",
     title: "IQOS ILUMA. Smoke-Free Innovation, Redefined.",
     description:
@@ -67,7 +77,7 @@ const Hero = () => {
   // Auto-advance
   useEffect(() => {
     if (isPaused) return
-    intervalRef.current = setInterval(goNext, 3000)
+    intervalRef.current = setInterval(goNext, 5000)
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current)
     }

@@ -44,19 +44,25 @@ export default function Contact() {
     e.preventDefault()
     setIsSubmitting(true)
     try {
-      await fetch(
-        "https://script.google.com/macros/s/AKfycbyY_DBD_OOnVkoOBkSQRST2Q01jyQilImi-zsdoTfo7qAW5LMXXOxXpxro5m73jOcIz/exec",
-        { method: "POST", body: JSON.stringify(formData) }
-      )
-      showToast("Message sent successfully!", "success")
-      setFormData({
-        firstName: "",
-        lastName: "",
-        email: "",
-        contactNumber: "",
-        message: "",
-        agreeToPrivacy: false,
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
       })
+      const data = await res.json()
+      if (data.success) {
+        showToast("Message sent successfully!", "success")
+        setFormData({
+          firstName: "",
+          lastName: "",
+          email: "",
+          contactNumber: "",
+          message: "",
+          agreeToPrivacy: false,
+        })
+      } else {
+        throw new Error(data.error)
+      }
     } catch {
       showToast("Something went wrong. Please try again.", "error")
     } finally {

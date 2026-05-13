@@ -101,7 +101,7 @@ export default function Footer() {
                 <div className="flex items-center gap-[10px]">
                   <LuPhone className="w-4 h-4 text-black" />
                   <span className="text-[#606060] text-[13px] font-medium leading-[20px] font-manrope">
-                    +977 9802532700
+                    +977 9802532700 (Whatsapp only)
                   </span>
                 </div>
                 <div className="flex items-center gap-[10px]">
