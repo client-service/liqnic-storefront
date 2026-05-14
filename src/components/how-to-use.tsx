@@ -13,7 +13,7 @@ export default function IqosDeviceSection() {
         <div className="w-full component-px">
           <div className="relative aspect-video w-full rounded-xl overflow-hidden shadow-lg">
             <IllumaAd
-              src="https://res.cloudinary.com/do9wvb32d/video/upload/v1775183425/iqos_iluma_ad_2_mkwdyh.mp4"
+              src="https://res.cloudinary.com/dtc5wqlst/video/upload/v1778725728/iqos_iluma_ad_2_tb8hx0.mp4"
               poster="/images/video-thumbnail.jpg" // optional
             />
           </div>

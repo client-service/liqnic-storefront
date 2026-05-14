@@ -212,7 +212,7 @@ export default async function Home({
 
       <Hero />
       <IllumaAd
-        src="https://res.cloudinary.com/do9wvb32d/video/upload/v1775184129/iqos_iluma_ad_1_c8hd3h.mp4"
+        src="https://res.cloudinary.com/dtc5wqlst/video/upload/v1778725714/iqos_iluma_ad_1_1_wykzd1.mp4"
         poster="/images/video-thumbnail.jpg"
       />
 
