@@ -163,13 +163,13 @@ const ShippingAddress = ({
           autoComplete="organization"
           data-testid="shipping-company-input"
         />
+        {/* Stored in postal_code field — no postal code system locally */}
         <Input
-          label="Postal code"
+          label="Nearest Landmark"
           name="shipping_address.postal_code"
-          autoComplete="postal-code"
+          autoComplete="off"
           value={formData["shipping_address.postal_code"]}
           onChange={handleChange}
-          required
           data-testid="shipping-postal-code-input"
         />
         <Input

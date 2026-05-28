@@ -19,7 +19,6 @@ import {
 import type { MenuItem } from "@lib/menu"
 import { FaHome } from "react-icons/fa"
 
-// ── Map label → icon (extend as needed) ──────────────────────────────────────
 const ICON_MAP: Record<string, React.ReactNode> = {
   home: <FaHome size={15} />,
   shop: <LuShoppingBag size={15} />,
@@ -34,12 +33,7 @@ function NavIcon({ label }: { label: string }) {
   const icon = ICON_MAP[label.toLowerCase()]
   if (!icon) return null
   return (
-    <span
-      className="
-      w-7 h-7 flex items-center justify-center flex-shrink-0
-      rounded-lg bg-gray-100 text-gray-500
-    "
-    >
+    <span className="w-7 h-7 flex items-center justify-center flex-shrink-0 rounded-lg bg-gray-100 text-gray-500">
       {icon}
     </span>
   )
@@ -115,14 +109,13 @@ export default function SideMenu({
           open ? "translate-x-0" : "translate-x-full"
         )}
       >
-        {/* ── Header: brand + close ── */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
+        {/* ── Header ── */}
+        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 flex-shrink-0">
           <LocalizedClientLink
             href="/"
             onClick={close}
             className="flex items-center gap-2.5"
           >
-            {/* Brand mark — swap with your actual <Logo /> component if you have one */}
             <div className="w-7 h-7 rounded-lg bg-gray-900 flex items-center justify-center flex-shrink-0">
               <span className="text-white text-[11px] font-semibold tracking-tight">
                 L
@@ -143,9 +136,9 @@ export default function SideMenu({
           </button>
         </div>
 
-        {/* ── Nav ── */}
-        <nav className="flex-1 overflow-y-auto px-3 py-3">
-          {/* Account section */}
+        {/* ── Nav — this is the only scrollable zone ── */}
+        <nav className="flex-1 min-h-0 overflow-y-auto px-3 py-3">
+          {/* Account */}
           <p className="px-2 pt-1 pb-1.5 text-[10px] font-semibold tracking-widest text-gray-400 uppercase">
             Account
           </p>
@@ -167,7 +160,6 @@ export default function SideMenu({
           <div className="h-px bg-gray-100 mx-2 mb-3" />
 
           {/* Dynamic menu items */}
-
           <p className="px-2 pb-1.5 text-[10px] font-semibold tracking-widest text-gray-400 uppercase">
             Shop
           </p>
@@ -185,7 +177,7 @@ export default function SideMenu({
                     {item.label}
                   </LocalizedClientLink>
                 ) : item.dropdown && item.children ? (
-                  /* ── Parent: toggle row + inset submenu card ── */
+                  /* ── Parent: toggle row + inset submenu ── */
                   <div className="flex flex-col gap-0.5">
                     {/* Toggle row */}
                     <button
@@ -228,28 +220,21 @@ export default function SideMenu({
                     {/* Inset submenu card */}
                     <div
                       className={clx(
-                        "overflow-hidden transition-all duration-200",
+                        "transition-all duration-300 overflow-hidden",
                         openDropdown === item.label
-                          ? "max-h-96 opacity-100"
+                          ? "max-h-[9999px] opacity-100"
                           : "max-h-0 opacity-0"
                       )}
                     >
-                      <div className="mx-2 mb-1 rounded-xl overflow-hidden bg-gray-50 border border-gray-100">
-                        {/* "Show all [label]" — navigates to the parent category page */}
+                      <div className="mx-2 mb-1 rounded-xl bg-gray-50 border border-gray-100 overflow-hidden">
+                        {/* "Show all [label]" header link */}
                         {item.href && (
                           <LocalizedClientLink
                             href={`/categories/${item.href}`}
                             onClick={close}
-                            className="
-                              flex items-center justify-between
-                              px-4 py-3 min-h-[44px]
-                              text-sm font-semibold text-gray-800
-                              hover:bg-gray-100 transition-colors
-                              border-b border-gray-100
-                            "
+                            className="flex items-center justify-between px-4 py-3 min-h-[44px] text-sm font-semibold text-gray-800 hover:bg-gray-100 transition-colors border-b border-gray-100"
                           >
                             <span>Show all {item.label}</span>
-                            {/* → arrow distinguishes navigation from the › expand chevron */}
                             <svg
                               width="14"
                               height="14"
@@ -268,22 +253,33 @@ export default function SideMenu({
                           </LocalizedClientLink>
                         )}
 
-                        {/* Subcategory items */}
-                        <ul>
+                        {/*
+                          Subcategory list.
+                          — When there are more than 8 children, cap the list at
+                            ~260 px and let it scroll internally so the drawer
+                            doesn't become impossibly long.
+                          — For smaller lists, no cap is applied and the items
+                            just flow naturally (the outer nav already scrolls).
+                        */}
+                        <ul
+                          className={clx(
+                            item.children.length > 8 &&
+                              "max-h-[260px] overflow-y-auto overscroll-contain"
+                          )}
+                        >
                           {item.children.map((child, i) => (
                             <li key={child.label}>
                               <LocalizedClientLink
                                 href={child.href!}
                                 onClick={close}
                                 className={clx(
-                                  "flex items-center gap-3 px-4 py-2.5 min-h-[44px]",
+                                  "flex items-center px-4 py-2.5 min-h-[44px]",
                                   "text-sm text-gray-600",
                                   "hover:bg-gray-100 hover:text-gray-900 transition-colors",
                                   i < item.children.length - 1 &&
                                     "border-b border-gray-100"
                                 )}
                               >
-                                <span className="w-1.5 h-1.5 rounded-full bg-gray-300 flex-shrink-0" />
                                 {child.label}
                               </LocalizedClientLink>
                             </li>
@@ -299,7 +295,7 @@ export default function SideMenu({
         </nav>
 
         {/* ── Footer ── */}
-        <div className="px-4 py-3 border-t border-gray-100 flex items-center justify-between gap-3">
+        <div className="px-4 py-3 border-t border-gray-100 flex items-center justify-between gap-3 flex-shrink-0">
           {regions && (
             <div
               className="flex items-center gap-1.5 text-xs text-gray-500 cursor-pointer hover:text-gray-700 transition-colors"
