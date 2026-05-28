@@ -10,6 +10,93 @@ import Link from "next/link"
 import { Suspense } from "react"
 import { LuUser } from "react-icons/lu"
 
+/** Threshold above which we switch from a simple list to a multi-column mega menu */
+const MEGA_MENU_THRESHOLD = 8
+
+/** How many columns to use for the mega menu */
+function columnCount(itemCount: number): number {
+  if (itemCount <= 9) return 2
+  if (itemCount <= 16) return 3
+  return 4
+}
+
+function DropdownMenu({ item }: { item: MenuItem }) {
+  const children = item.children ?? []
+  const isMega = children.length > MEGA_MENU_THRESHOLD
+  const cols = columnCount(children.length)
+
+  if (!isMega) {
+    // ── Standard compact dropdown ──────────────────────────────────────────
+    return (
+      <div className="absolute top-full left-1/2 -translate-x-1/2 mt-3 w-56 bg-white border border-gray-100 rounded-xl shadow-xl shadow-black/[0.08] opacity-0 invisible translate-y-1 group-hover:visible group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-200 ease-out z-50">
+        <div className="absolute -top-[6px] left-1/2 -translate-x-1/2 w-3 h-3 bg-white border-l border-t border-gray-100 rotate-45" />
+        <div className="p-2">
+          {children.map((child) => (
+            <Link
+              key={child.label}
+              href={child.href || "#"}
+              className="block px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 hover:text-[#C5A163] hover:shadow-sm hover:rounded-lg transition-all font-manrope"
+            >
+              {child.label}
+            </Link>
+          ))}
+        </div>
+      </div>
+    )
+  }
+
+  // ── Mega menu ─────────────────────────────────────────────────────────────
+  const gridColsClass =
+    cols === 2 ? "grid-cols-2" : cols === 3 ? "grid-cols-3" : "grid-cols-4"
+
+  return (
+    <div
+      className={`
+        absolute top-full left-1/2 -translate-x-1/2 mt-3
+        bg-white border border-gray-100 rounded-2xl
+        shadow-2xl shadow-black/[0.10]
+        opacity-0 invisible translate-y-1
+        group-hover:visible group-hover:opacity-100 group-hover:translate-y-0
+        transition-all duration-200 ease-out z-50
+      `}
+      style={{ width: cols === 2 ? 480 : cols === 3 ? 660 : 820 }}
+    >
+      {/* Arrow */}
+      <div className="absolute -top-[6px] left-1/2 -translate-x-1/2 w-3 h-3 bg-white border-l border-t border-gray-100 rotate-45" />
+
+      {/* Header */}
+      <div className="px-6 pt-5 pb-4 border-b border-gray-100">
+        <Link
+          href={`/categories/${item.href}` || "#"}
+          className="text-xs font-semibold uppercase tracking-widest text-[#C5A163] hover:text-[#b08b4f] transition-colors font-manrope"
+        >
+          Browse all {item.label} →
+        </Link>
+      </div>
+
+      {/* Grid of items */}
+      <div className={`grid ${gridColsClass} gap-3 p-5`}>
+        {children.map((child) => (
+          <Link
+            key={child.label}
+            href={child.href || "#"}
+            className="
+              px-4 py-3
+              text-sm text-gray-700 font-manrope
+              bg-white border border-transparent
+              rounded-xl
+              hover:border-gray-200 hover:shadow-md hover:shadow-black/[0.06] hover:text-[#C5A163]
+              transition-all duration-150
+            "
+          >
+            {child.label}
+          </Link>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 export default async function Navbar() {
   const regions: StoreRegion[] = await listRegions()
   const MENU_ITEMS: MenuItem[] = await buildMenuItems()
@@ -40,19 +127,11 @@ export default async function Navbar() {
                   <span className="text-black text-[14.4px] font-medium leading-[150%] group-hover:text-[#C5A163] transition-colors font-manrope">
                     {item.label}
                   </span>
-                  <ChevronDown className="w-4 h-4 text-black group-hover:text-[#C5A163] transition-colors" />
+                  {/* Rotate chevron on hover */}
+                  <ChevronDown className="w-4 h-4 text-black group-hover:text-[#C5A163] group-hover:rotate-180 transition-all duration-200" />
                 </Link>
-                <div className="absolute top-full left-0 mt-2 w-40 lg:w-60 bg-white border rounded-lg border-gray-200 shadow-lg opacity-0 invisible group-hover:visible group-hover:opacity-100 transition-all z-50">
-                  {item.children?.map((child) => (
-                    <Link
-                      key={child.label}
-                      href={child.href || "#"}
-                      className="block px-4 py-2 text-sm text-black hover:bg-gray-50 first:rounded-t-lg last:rounded-b-lg"
-                    >
-                      {child.label}
-                    </Link>
-                  ))}
-                </div>
+
+                <DropdownMenu item={item} />
               </div>
             ) : (
               <Link
@@ -68,7 +147,7 @@ export default async function Navbar() {
 
         {/* Right side actions */}
         <div className="flex items-center gap-2 sm:gap-4 lg:gap-8">
-          {/* My Account — desktop only (mobile gets it in SideMenu) */}
+          {/* My Account — desktop only */}
           <LocalizedClientLink
             className="hidden lg:flex items-center gap-1.5 hover:text-[#C5A163] transition-colors"
             href="/account"
