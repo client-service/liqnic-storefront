@@ -2,8 +2,8 @@ import { Metadata } from "next"
 import { getBaseURL } from "@lib/util/env"
 import { SortOptions } from "@modules/store/components/refinement-list/sort-products"
 import StoreTemplate from "@modules/store/templates"
-import { Suspense } from 'react'
-import SkeletonProductGrid from '../../../../modules/skeletons/templates/skeleton-product-grid'
+import { Suspense } from "react"
+import SkeletonProductGrid from "../../../../modules/skeletons/templates/skeleton-product-grid"
 
 export const metadata: Metadata = {
   metadataBase: new URL(getBaseURL()),
@@ -34,7 +34,7 @@ export const metadata: Metadata = {
     type: "website",
     url: `${getBaseURL()}/shop`,
     siteName: "Liqnic",
-    title: "Shop — Premium Liquor, IQOS & ZYN | Liqnic Nepal",
+    title: "Shop — Premium Liquor, IQOS & ZYN | Liqnic",
     description:
       "Explore our curated selection of world-class spirits, IQOS heated tobacco devices, and ZYN nicotine pouches. 100% authentic. Fast Kathmandu delivery.",
     images: [
@@ -51,7 +51,7 @@ export const metadata: Metadata = {
   // ── Twitter / X ───────────────────────────────────────────────────────────
   twitter: {
     card: "summary_large_image",
-    title: "Shop Premium Liquor, IQOS & ZYN | Liqnic Nepal",
+    title: "Shop Premium Liquor, IQOS & ZYN | Liqnic",
     description:
       "Authentic spirits, IQOS devices & ZYN pouches delivered fast in Kathmandu.",
     images: ["/images/og-shop.jpg"],
@@ -132,9 +132,9 @@ export default async function StorePage(props: Params) {
       />
       <Suspense fallback={<SkeletonProductGrid />}>
         {/* Pass the un-awaited searchParams promise down */}
-        <StoreTemplateWrapper 
-          countryCode={params.countryCode} 
-          searchParamsPromise={props.searchParams} 
+        <StoreTemplateWrapper
+          countryCode={params.countryCode}
+          searchParamsPromise={props.searchParams}
         />
       </Suspense>
     </>

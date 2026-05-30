@@ -18,7 +18,7 @@ async function getProducts(): Promise<
 > {
   try {
     const res = await fetch(
-      `${process.env.MEDUSA_BACKEND_URL}/store/products?limit=200&fields=handle,updated_at`,
+      `${process.env.MEDUSA_BACKEND_URL}/store/products?limit=1000&fields=handle,updated_at`,
       {
         headers: {
           "x-publishable-api-key":

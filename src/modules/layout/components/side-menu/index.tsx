@@ -18,6 +18,7 @@ import {
 } from "react-icons/lu"
 import type { MenuItem } from "@lib/menu"
 import { FaHome } from "react-icons/fa"
+import Image from "next/image"
 
 const ICON_MAP: Record<string, React.ReactNode> = {
   home: <FaHome size={15} />,
@@ -116,14 +117,14 @@ export default function SideMenu({
             onClick={close}
             className="flex items-center gap-2.5"
           >
-            <div className="w-7 h-7 rounded-lg bg-gray-900 flex items-center justify-center flex-shrink-0">
-              <span className="text-white text-[11px] font-semibold tracking-tight">
-                L
-              </span>
-            </div>
-            <span className="text-sm font-semibold text-gray-900 tracking-tight">
-              Liqnic
-            </span>
+            {/* ── Logo ─────────────────────────────────────────────────────── */}
+            <Image
+              src="/logo.png"
+              alt="Liqnic"
+              width={100}
+              height={100}
+              className="w-12 md:w-32"
+            />
           </LocalizedClientLink>
 
           <button
