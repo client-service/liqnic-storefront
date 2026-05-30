@@ -202,6 +202,28 @@ export default function ProductPreview({
     }
   }
 
+  const formatTitle = (title: string) => {
+    return title
+      .toLowerCase()
+      .replace(/(\d+)\s*ml\b/g, "$1 ML")
+      .replace(/(\d+)ml\b/g, "$1 ML")
+      .replace(/(\d+)\s*ltr\b/g, "$1 LTR")
+      .replace(/(\d+)ltr\b/g, "$1 LTR")
+      .split(" ")
+      .map((word) => {
+        if (word === "ml" || word === "ltr") return word.toUpperCase()
+
+        return word
+          .split("'")
+          .map((part, i) => {
+            if (!part) return part
+            if (i === 0) return part.charAt(0).toUpperCase() + part.slice(1) // ✅ only capitalize before apostrophe
+            return part // ✅ leave "s", "t", "re" etc. as lowercase
+          })
+          .join("'")
+      })
+      .join(" ")
+  }
   const { cheapestPrice } = getProductPrice({ product })
 
   return (
@@ -232,9 +254,8 @@ export default function ProductPreview({
       <div className="flex flex-col flex-grow p-2.5 sm:p-3.5 gap-2">
         {/* Title */}
         <h2 className="text-xs sm:text-sm font-semibold leading-snug line-clamp-2 text-gray-900">
-          {product.title}
+          {formatTitle(product.title)}
         </h2>
-
         {product.subtitle && (
           <p className="hidden sm:block text-xs text-gray-400 line-clamp-1">
             {product.subtitle}

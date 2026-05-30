@@ -27,11 +27,11 @@ export async function buildMenuItems(): Promise<MenuItem[]> {
   )
 
   return [
-    { label: "Home", href: "/" },
-    { label: "Shop", href: "/shop" },
+    // { label: "Home", href: "/" }, 
+    { label: "All Products", href: "/shop" },
     ...menuItems,
     // { label: "Bundles & Gifts", href: "/bundles" },
-    { label: "About us", href: "/about" },
+    // { label: "About us", href: "/about" }, 
     { label: "Contact", href: "/contact" },
   ]
 }
