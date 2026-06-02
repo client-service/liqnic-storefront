@@ -9,6 +9,7 @@ import { HttpTypes } from "@medusajs/types"
 import Addresses from "@modules/checkout/components/addresses"
 import Review from "@modules/checkout/components/review"
 import { Suspense } from "react"
+import ScrollToReview from "@modules/checkout/components/scroll-to-review"
 
 function SectionSkeleton() {
   return <div className="h-24 rounded-xl bg-gray-100 animate-pulse" />
@@ -34,7 +35,6 @@ async function AutoSelectShipping({ cart }: { cart: HttpTypes.StoreCart }) {
 }
 
 async function AutoSelectCOD({ cart }: { cart: HttpTypes.StoreCart }) {
-  // Skip if a payment session is already active
   const existingSession = cart.payment_collection?.payment_sessions?.find(
     (ps) => ps.provider_id?.includes("cod-payment")
   )
@@ -156,8 +156,17 @@ export default async function CheckoutForm({
       <Suspense fallback={<SectionSkeleton />}>
         <Addresses cart={cart} customer={customer} />
       </Suspense>
-      <Suspense fallback={<SectionSkeleton />}>
-        <FreshCartReview cart={cart} />
+
+      {/* Scroll target */}
+      <div id="review-section">
+        <Suspense fallback={<SectionSkeleton />}>
+          <FreshCartReview cart={cart} />
+        </Suspense>
+      </div>
+
+      {/* Triggers smooth scroll when step=review */}
+      <Suspense fallback={null}>
+        <ScrollToReview />
       </Suspense>
 
       <DeliveryInfoCard />
