@@ -43,11 +43,8 @@ const Addresses = ({
   // was causing the page to jump past the payment selector entirely.
   useEffect(() => {
     const step = searchParams.get("step")
-    // Only redirect the intermediate "delivery" step — Medusa's setAddresses
-    // server action redirects here after saving addresses. We want to land on
-    // the checkout page with no specific step param so everything is visible.
     if (step === "delivery" || step === "payment") {
-      router.replace(pathname) // ← just drop the step param entirely
+      router.replace(pathname + "?step=review")
     }
   }, [searchParams, pathname, router])
 
@@ -111,7 +108,7 @@ const Addresses = ({
                   Processing...
                 </span>
               ) : (
-                "Continue to review"
+                "Continue"
               )}
             </button>
 
