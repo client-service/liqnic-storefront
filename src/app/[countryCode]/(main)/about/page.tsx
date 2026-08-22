@@ -169,7 +169,16 @@ export default function About() {
                   "Online retail of premium liquor and e-cigarette products",
               },
               { label: "Business Email", value: "liqnichost@gmail.com" },
-              { label: "Business Phone", value: "+977-9802532700" },
+              {
+                label: "Business Phone",
+                value: (
+                  <>
+                    +977-9714559240
+                    <br />
+                    +977-9802532700
+                  </>
+                ),
+              },
             ].map(({ label, value }, i, arr) => (
               <div
                 key={label}
