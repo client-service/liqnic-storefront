@@ -98,10 +98,13 @@ export default function Footer() {
                 Contact
               </h3>
               <div className="flex flex-col items-start gap-[6px]">
-                <div className="flex items-center gap-[10px]">
-                  <LuPhone className="w-4 h-4 text-black" />
+                <div className="flex items-start gap-[10px]">
+                  <LuPhone className="w-4 h-4 text-black mt-[2px]" />
                   <span className="text-[#606060] text-[13px] font-medium leading-[20px] font-manrope">
-                    +977 9802532700 (Whatsapp only)
+                    +977 9714559240
+                    <br />
+                    +977 9802532700{" "}
+                    <span className="text-[11px]">(WhatsApp only)</span>
                   </span>
                 </div>
                 <div className="flex items-center gap-[10px]">

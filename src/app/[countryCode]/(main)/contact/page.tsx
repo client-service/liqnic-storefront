@@ -269,9 +269,11 @@ export default function Contact() {
                           <h3 className="text-black text-sm lg:text-[14.4px] font-medium leading-[150%] font-manrope">
                             Phone
                           </h3>
-                          <p className="text-black text-sm lg:text-[14.4px] font-medium leading-[150%] font-manrope">
-                            9802532700
-                          </p>
+                          <div className="flex flex-col text-black text-sm lg:text-[14.4px] font-medium leading-[150%] font-manrope">
+                            <span>+977 9714559240</span>
+
+                            <span>+977 9802532700 </span>
+                          </div>
                         </div>
                       </div>
 
