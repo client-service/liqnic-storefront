@@ -8,6 +8,7 @@ import IqosDeviceSection from "components/how-to-use"
 import IcosDeviceShowcase from "components/icos-device-showcase"
 import IllumaAd from "components/illuma-ad"
 import LiquorShowcase from "components/liquor-showcase"
+import TereaPopup from "components/TereaPopup"
 import ZYNProductsShowcase from "components/zyn-products-showcase"
 import type { Metadata } from "next"
 import Link from "next/link"
@@ -209,7 +210,7 @@ export default async function Home({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-
+      <TereaPopup />
       <Hero />
       <IllumaAd
         src="https://res.cloudinary.com/dtc5wqlst/video/upload/v1778725714/iqos_iluma_ad_1_1_wykzd1.mp4"
